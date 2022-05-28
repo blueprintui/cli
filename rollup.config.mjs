@@ -1,0 +1,178 @@
+import fs from 'fs-extra';
+import glob from 'glob';
+import typescript from '@rollup/plugin-typescript';
+import nodeResolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
+import virtual from '@rollup/plugin-virtual';
+import copy from 'rollup-plugin-copy';
+import del from 'rollup-plugin-delete';
+import minifyHTML from 'rollup-plugin-minify-html-literals';
+import execute from 'rollup-plugin-shell';
+import { terser } from 'rollup-plugin-terser';
+import { resolve, extname } from 'path';
+import { importAssertionsPlugin } from './import-assert.mjs';
+// import { importAssertionsPlugin } from 'rollup-plugin-import-assert';
+import { importAssertions } from 'acorn-import-assertions';
+import { idiomaticDecoratorsTransformer, constructorCleanupTransformer } from '@lit/ts-transformers';
+import * as csso from 'csso';
+import { exec as _exec } from 'child_process';
+import { promisify } from 'util';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const exec = promisify(_exec);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+let userConfig = { };;
+if (process.env.BLUEPRINTUI_CONFIG) {
+  userConfig = await import(process.env.BLUEPRINTUI_CONFIG);
+}
+
+const config = {
+  externals: [],
+  assets: ['./README.md', './LICENSE', './package.json'],
+  baseDir: './src',
+  outDir: './dist/lib',
+  entryPoints: ['./src/**/index.ts', './src/include/*.ts'],
+  tsconfig: './tsconfig.json',
+  customElementsManifestConfig: './custom-elements-manifest.config.mjs',
+  sourcemap: false,
+  ...userConfig.default
+};
+
+const cwd = process.cwd();
+const project = {
+  externals: config.externals,
+  packageFile: resolve(cwd, './package.json'),
+  assets: config.assets.map(a => resolve(cwd, a)),
+  baseDir: resolve(cwd, config.baseDir),
+  outDir: resolve(cwd, config.outDir),
+  entryPoints: config.entryPoints.map(e => resolve(cwd, e)),
+  tsconfig: resolve(cwd, config.tsconfig),
+  customElementsManifestConfig: resolve(__dirname, config.customElementsManifestConfig),
+  prod: process.env.BLUEPRINTUI_BUILD === 'production',
+  sourcemap: config.sourcemap
+}
+
+export default [
+  {
+    external: project.externals,
+    input: 'library-entry-points',
+    treeshake: false,
+    preserveEntrySignatures: 'strict',
+    output: {
+      format: 'esm',
+      dir: project.outDir,
+      preserveModules: true,
+      sourcemap: project.sourcemap,
+      sourcemapExcludeSources: true
+    },
+    acornInjectPlugins: [importAssertions],
+    plugins: [
+      // del({ targets: [project.outDir], hook: 'buildStart', runOnce: true }),
+      copyAssets(),
+      project.prod ? cssOptimize() : [],
+      importAssertionsPlugin(),
+      createEntrypoints(),
+      nodeResolve({ exportConditions: [project.prod ? 'production' : 'development'] }),
+      compileTypescript(),
+      project.prod ? [] : typeCheck(),
+      project.prod ? [] : writeCache(),
+      project.prod ? minifyHTML.default() : [],
+      project.prod ? minifyJavaScript() : [],
+      project.prod ? inlinePackageVersion() : [],
+      project.prod ? postClean(): [],
+      project.prod ? customElementsAnalyzer() : [],
+      project.prod ? packageCheck() : [],
+    ],
+  },
+];
+
+function copyAssets() {
+  return copy({ copyOnce: true, targets: project.assets.map(src => ({ src, dest: config.outDir }))});
+}
+
+function createEntrypoints() {
+  return virtual({ 'library-entry-points': [...project.entryPoints.flatMap(i => glob.sync(i))].map(entry => `export * from '${entry}';`).join('\n') });
+}
+
+function compileTypescript() {
+  return typescript({
+    tsconfig: project.tsconfig,
+    noEmitOnError: project.prod,
+    compilerOptions: { sourceMap: project.sourcemap },
+    transformers: {
+      before: [{ type: 'program', factory: idiomaticDecoratorsTransformer }],
+      after: [{ type: 'program', factory: constructorCleanupTransformer }],
+    }
+  });
+}
+
+function typeCheck() {
+  return execute({ commands: [`tsc --noEmit --project ${project.tsconfig}`], hook: 'buildEnd' });
+}
+
+function minifyJavaScript() {
+  return terser({ ecma: 2022, module: true, format: { comments: false }, compress: { passes: 2, unsafe: true } });
+}
+
+function inlinePackageVersion() {
+  return replace({ preventAssignment: false, values: { PACKAGE_VERSION: fs.readJsonSync(project.packageFile).version } })
+}
+
+function postClean() {
+  return del({ targets: [`${project.outDir}/**/.tsbuildinfo`, `${project.outDir}/**/_virtual`, `${project.outDir}/**/*.spec.d.ts`, `${project.outDir}/**/*.performance.d.ts`], hook: 'writeBundle' });
+}
+
+function packageCheck() {
+  return execute({ commands: [`package-check --cwd ${project.outDir}`], sync: true, hook: 'writeBundle' });
+};
+
+function customElementsAnalyzer() {
+  let copied = false;
+  return {
+    name: 'custom-elements-analyzer',
+    writeBundle: async () => {
+      console.log('custom-elements-analyzer');
+      if (copied) {
+        return;
+      } else {
+        await exec(`cem analyze --config ${project.customElementsManifestConfig}`);
+        const json = await fs.readJson(project.packageFile);
+        const packageFile = { ...json, customElements: './custom-elements.json', scripts: undefined, devDependencies: undefined };
+        await fs.writeFile(`${project.outDir}/package.json`, JSON.stringify(packageFile, null, 2));
+      }
+    }
+  };
+}
+
+function cssOptimize() {
+  return {
+    load(id) { return id.slice(-4) === '.css' ? this.addWatchFile(resolve(id)) : null },
+    transform: async (css, id) => id.slice(-4) === '.css' ? ({ code: csso.minify(css, { comments: false }).css, map: { mappings: '' } }) : null
+  };
+};
+
+const fileCache = {};
+/**
+ * Rollup plugin for local file writes
+ * Compares the output of rollup to the current file on disk. If same it will
+ * prevent rollup from writting to the file again preventing file watchers from being triggered
+ */
+function writeCache() {
+  return {
+    name: 'esm-cache',
+    generateBundle(_options, bundles) {
+      for (const [key, bundle] of Object.entries(bundles)) {
+        const path = `${project.outDir}/${bundle.fileName}`;
+
+        if (extname(path) === '.js' && fileCache[path] !== bundle.code) {
+          fileCache[path] = bundle.code;
+        } else {
+          delete bundles[key];
+        }
+      }
+    },
+  };
+};
