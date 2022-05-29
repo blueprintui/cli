@@ -35,7 +35,7 @@ const config = {
   baseDir: './src',
   outDir: './dist/lib',
   entryPoints: ['./src/**/index.ts', './src/include/*.ts'],
-  tsconfig: './tsconfig.json',
+  tsconfig: './tsconfig.lib.json',
   customElementsManifestConfig: './custom-elements-manifest.config.mjs',
   sourcemap: false,
   ...userConfig.default
@@ -83,8 +83,8 @@ export default [
       project.prod ? minifyJavaScript() : [],
       project.prod ? inlinePackageVersion() : [],
       project.prod ? postClean(): [],
-      project.prod ? customElementsAnalyzer() : [],
       project.prod ? packageCheck() : [],
+      // project.prod ? customElementsAnalyzer() : [],
     ],
   },
 ];
@@ -122,7 +122,7 @@ function inlinePackageVersion() {
 }
 
 function postClean() {
-  return del({ targets: [`${project.outDir}/**/.tsbuildinfo`, `${project.outDir}/**/_virtual`, `${project.outDir}/**/*.spec.d.ts`, `${project.outDir}/**/*.performance.d.ts`], hook: 'writeBundle' });
+  return del({ targets: [`${project.outDir}/**/.tsbuildinfo`, `${project.outDir}/**/_virtual`], hook: 'writeBundle' });
 }
 
 function packageCheck() {
@@ -134,7 +134,6 @@ function customElementsAnalyzer() {
   return {
     name: 'custom-elements-analyzer',
     writeBundle: async () => {
-      console.log('custom-elements-analyzer');
       if (copied) {
         return;
       } else {

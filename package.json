@@ -1,6 +1,6 @@
 {
   "name": "@blueprintui/cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "./index.mjs",
   "bin": {
@@ -12,7 +12,7 @@
   "author": "Cory Rylan",
   "license": "MIT",
   "dependencies": {
-    "@custom-elements-manifest/analyzer": "^0.6.1",
+    "@custom-elements-manifest/analyzer": "^0.6.2",
     "@lit/ts-transformers": "^1.1.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^4.0.0",
