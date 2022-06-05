@@ -24,7 +24,7 @@ const exec = promisify(_exec);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-let userConfig = { };;
+let userConfig = { };
 if (process.env.BLUEPRINTUI_CONFIG) {
   userConfig = await import(process.env.BLUEPRINTUI_CONFIG);
 }
@@ -38,7 +38,7 @@ const config = {
   tsconfig: './tsconfig.lib.json',
   customElementsManifestConfig: './custom-elements-manifest.config.mjs',
   sourcemap: false,
-  ...userConfig.default
+  ...userConfig.default.library
 };
 
 const cwd = process.cwd();
