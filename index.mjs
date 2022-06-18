@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 
-import path from 'path';
 import * as url from 'url';
-import loadConfigFile from 'rollup/loadConfigFile';
+import { path } from 'zx';
+import { spinner } from 'zx/experimental';
 import { rollup, watch } from 'rollup';
 import { program } from 'commander';
+import loadConfigFile from 'rollup/loadConfigFile';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
-const ERROR = '\x1b[31m%s\x1b[0m'; //red
-const WARN = '\x1b[33m%s\x1b[0m'; //yellow
-const INFO = '\x1b[36m%s\x1b[0m'; //cyan
-const SUCCESS = '\x1b[32m%s\x1b[0m'; //green
+
+const status = {
+  error: '\x1b[31m%s\x1b[0m',
+  warn: '\x1b[33m%s\x1b[0m',
+  info: '\x1b[36m%s\x1b[0m',
+  success: '\x1b[32m%s\x1b[0m'
+};
 
 program
   .command('build')
@@ -20,7 +24,7 @@ program
   .description('build library')
   .action(async (options, command) => {
     process.env.BLUEPRINTUI_BUILD = options.prod || !options.watch ? 'production' : 'development';
-    process.env.BLUEPRINTUI_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve(process.cwd(), './rollup.config.js');
+    process.env.BLUEPRINTUI_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');
     buildRollup(options);
   });
 
@@ -40,16 +44,15 @@ function buildRollup(args) {
         let bundle;
         let buildFailed = false;
         try {
-          console.log(INFO, 'Building...');
-          bundle = await rollup(options[0]);
+          bundle = await spinner('Building...', async () => await rollup(options[0]));
           await bundle.write(options[0].output[0]);
         } catch (error) {
           buildFailed = true;
-          console.error(ERROR, error);
+          console.error(status.error, error);
         }
         if (bundle) {
           const end = Date.now();
-          console.log(SUCCESS, `Completed in ${(end - start) / 1000} seconds 🎉`);
+          console.log(status.success, `Completed in ${(end - start) / 1000} seconds 🎉`);
           await bundle.close();
         }
         process.exit(buildFailed ? 1 : 0);
@@ -66,17 +69,17 @@ function buildRollup(args) {
 
             switch (event.code) {
               case 'START':
-                console.log(INFO, 'Building...');
+                console.log(status.info, 'Building...');
                 break;
               case 'ERROR':
-                console.error(ERROR, event.error);
+                console.error(status.error, event.error);
                 event.result.close();
                 break;
               case 'WARN':
-                console.error(ERROR, event.error);
+                console.error(status.warn, event.error);
                 break;
               case 'BUNDLE_END':
-                console.log(SUCCESS, `Complete in ${event.duration / 1000} seconds`);
+                console.log(status.success, `Complete in ${event.duration / 1000} seconds`);
                 event.result.close();
                 break;
             }

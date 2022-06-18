@@ -1,5 +1,4 @@
-import fs from 'fs-extra';
-import glob from 'glob';
+import * as csso from 'csso';
 import typescript from '@rollup/plugin-typescript';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
@@ -8,21 +7,17 @@ import copy from 'rollup-plugin-copy';
 import del from 'rollup-plugin-delete';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
 import execute from 'rollup-plugin-shell';
+import { fs, glob, path } from 'zx';
+import { extname } from 'path';
 import { terser } from 'rollup-plugin-terser';
-import { resolve, extname } from 'path';
-import { importAssertionsPlugin } from './import-assert.mjs';
-// import { importAssertionsPlugin } from 'rollup-plugin-import-assert';
 import { importAssertions } from 'acorn-import-assertions';
 import { idiomaticDecoratorsTransformer, constructorCleanupTransformer } from '@lit/ts-transformers';
-import * as csso from 'csso';
-import { exec as _exec } from 'child_process';
-import { promisify } from 'util';
-import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { importAssertionsPlugin } from './import-assert.mjs';
+// import { importAssertionsPlugin } from 'rollup-plugin-import-assert';
 
-const exec = promisify(_exec);
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
 let userConfig = { };
 if (process.env.BLUEPRINTUI_CONFIG) {
@@ -38,19 +33,19 @@ const config = {
   tsconfig: './tsconfig.lib.json',
   customElementsManifestConfig: './custom-elements-manifest.config.mjs',
   sourcemap: false,
-  ...userConfig.default.library
+  ...userConfig.default?.library
 };
 
 const cwd = process.cwd();
 const project = {
   externals: config.externals,
-  packageFile: resolve(cwd, './package.json'),
-  assets: config.assets.map(a => resolve(cwd, a)),
-  baseDir: resolve(cwd, config.baseDir),
-  outDir: resolve(cwd, config.outDir),
-  entryPoints: config.entryPoints.map(e => resolve(cwd, e)),
-  tsconfig: resolve(cwd, config.tsconfig),
-  customElementsManifestConfig: resolve(__dirname, config.customElementsManifestConfig),
+  packageFile: path.resolve(cwd, './package.json'),
+  assets: config.assets.map(a => path.resolve(cwd, a)),
+  baseDir: path.resolve(cwd, config.baseDir),
+  outDir: path.resolve(cwd, config.outDir),
+  entryPoints: config.entryPoints.map(e => path.resolve(cwd, e)),
+  tsconfig: path.resolve(cwd, config.tsconfig),
+  customElementsManifestConfig: path.resolve(__dirname, config.customElementsManifestConfig),
   prod: process.env.BLUEPRINTUI_BUILD === 'production',
   sourcemap: config.sourcemap
 }
@@ -94,7 +89,7 @@ function copyAssets() {
 }
 
 function createEntrypoints() {
-  return virtual({ 'library-entry-points': [...project.entryPoints.flatMap(i => glob.sync(i))].map(entry => `export * from '${entry}';`).join('\n') });
+  return virtual({ 'library-entry-points': [...project.entryPoints.flatMap(i => glob.globbySync(i))].map(entry => `export * from '${entry}';`).join('\n') });
 }
 
 function compileTypescript() {
@@ -137,7 +132,7 @@ function customElementsAnalyzer() {
       if (copied) {
         return;
       } else {
-        await exec(`cem analyze --config ${project.customElementsManifestConfig}`);
+        await $`cem analyze --config ${project.customElementsManifestConfig}`;
         const json = await fs.readJson(project.packageFile);
         const packageFile = { ...json, customElements: './custom-elements.json', scripts: undefined, devDependencies: undefined };
         await fs.writeFile(`${project.outDir}/package.json`, JSON.stringify(packageFile, null, 2));
@@ -148,7 +143,7 @@ function customElementsAnalyzer() {
 
 function cssOptimize() {
   return {
-    load(id) { return id.slice(-4) === '.css' ? this.addWatchFile(resolve(id)) : null },
+    load(id) { return id.slice(-4) === '.css' ? this.addWatchFile(path.resolve(id)) : null },
     transform: async (css, id) => id.slice(-4) === '.css' ? ({ code: csso.minify(css, { comments: false }).css, map: { mappings: '' } }) : null
   };
 };

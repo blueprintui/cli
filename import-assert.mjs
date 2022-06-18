@@ -1,4 +1,4 @@
-import path from 'path';
+import { path } from 'zx';
 
 // temp workaround due to package "string-to-template-literal" not shipping valid esm module
 
