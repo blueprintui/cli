@@ -2,10 +2,22 @@
 import { resolve } from 'path';
 
 const cwd = process.cwd();
+const baseSrc = resolve(cwd, 'src');
+
+let userConfig = { };
+if (process.env.BLUEPRINTUI_CONFIG) {
+  userConfig = await import(process.env.BLUEPRINTUI_CONFIG);
+}
+
+const config = {
+  baseDir: './src',
+  outDir: './dist/lib',
+  ...userConfig?.default?.library
+};
 
 export default {
-  globs: [resolve(cwd, './src/**/element.ts')],
-  outdir: './dist/lib',
+  globs: [resolve(cwd, config.baseDir)],
+  outdir: config.outDir,
   litelement: true,
   plugins: [tsExtensionPlugin(), baseDir(), orderElements()],
 };
@@ -19,12 +31,12 @@ export function orderElements() {
   };
 }
 
-export function baseDir(config = { baseDir: 'src' }) {
+export function baseDir() {
   return {
     name: 'base-dir',
     packageLinkPhase({ customElementsManifest }) {
       customElementsManifest.modules = JSON.parse(
-        JSON.stringify(customElementsManifest.modules).replaceAll(`"/${config.baseDir}/`, '"').replaceAll(`"${config.baseDir}/`, '"')
+        JSON.stringify(customElementsManifest.modules).replaceAll(`"/${baseSrc}`, '"').replaceAll(`"${baseSrc}`, '"')
       );
     },
   };

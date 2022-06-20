@@ -7,7 +7,7 @@ import copy from 'rollup-plugin-copy';
 import del from 'rollup-plugin-delete';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
 import execute from 'rollup-plugin-shell';
-import { fs, glob, path } from 'zx';
+import { $, fs, glob, path } from 'zx';
 import { extname } from 'path';
 import { terser } from 'rollup-plugin-terser';
 import { importAssertions } from 'acorn-import-assertions';
@@ -26,12 +26,11 @@ if (process.env.BLUEPRINTUI_CONFIG) {
 
 const config = {
   externals: [],
-  assets: ['./README.md', './LICENSE', './package.json'],
+  assets: ['./README.md', './LICENSE.md', './package.json'],
   baseDir: './src',
   outDir: './dist/lib',
-  entryPoints: ['./src/**/index.ts', './src/include/*.ts'],
+  entryPoints: ['./src/**/index.ts'],
   tsconfig: './tsconfig.lib.json',
-  customElementsManifestConfig: './custom-elements-manifest.config.mjs',
   sourcemap: false,
   ...userConfig.default?.library
 };
@@ -45,7 +44,7 @@ const project = {
   outDir: path.resolve(cwd, config.outDir),
   entryPoints: config.entryPoints.map(e => path.resolve(cwd, e)),
   tsconfig: path.resolve(cwd, config.tsconfig),
-  customElementsManifestConfig: path.resolve(__dirname, config.customElementsManifestConfig),
+  customElementsManifestConfig: config.customElementsManifestConfig ? path.resolve(cwd, config.customElementsManifestConfig) :  path.resolve(__dirname, './custom-elements-manifest.config.mjs'),
   prod: process.env.BLUEPRINTUI_BUILD === 'production',
   sourcemap: config.sourcemap
 }
@@ -79,7 +78,8 @@ export default [
       project.prod ? inlinePackageVersion() : [],
       project.prod ? postClean(): [],
       project.prod ? packageCheck() : [],
-      // project.prod ? customElementsAnalyzer() : [],
+      project.prod ? customElementsAnalyzer() : [],
+      project.prod ? cleanPackageJson() : []
     ],
   },
 ];
@@ -132,13 +132,23 @@ function customElementsAnalyzer() {
       if (copied) {
         return;
       } else {
-        await $`cem analyze --config ${project.customElementsManifestConfig}`;
-        const json = await fs.readJson(project.packageFile);
-        const packageFile = { ...json, customElements: './custom-elements.json', scripts: undefined, devDependencies: undefined };
-        await fs.writeFile(`${project.outDir}/package.json`, JSON.stringify(packageFile, null, 2));
+        const cemPath = path.resolve('node_modules', '@custom-elements-manifest/analyzer/index.js');
+        await $`${cemPath} analyze --config ${project.customElementsManifestConfig}`;
+        copied = true;
       }
     }
   };
+}
+
+function cleanPackageJson() {
+  return {
+    name: 'clean-package-json',
+    writeBundle: async () => {
+      const json = await fs.readJson(project.packageFile);
+      const packageFile = { ...json, scripts: undefined, devDependencies: undefined };
+      await fs.writeFile(`${project.outDir}/package.json`, JSON.stringify(packageFile, null, 2));
+    }
+  }
 }
 
 function cssOptimize() {
