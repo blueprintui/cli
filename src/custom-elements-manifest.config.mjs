@@ -17,9 +17,17 @@ const config = {
 
 export default {
   globs: [resolve(cwd, config.baseDir)],
+  exclude: [
+    `${resolve(cwd, config.baseDir)}/**/*.test.ts`,
+    `${resolve(cwd, config.baseDir)}/**/*.spec.ts`,
+    `${resolve(cwd, config.baseDir)}/**/*.a11y.ts`,
+    `${resolve(cwd, config.baseDir)}/**/*.performance.ts`,
+    `${resolve(cwd, config.baseDir)}/**/*.stories.ts`,
+    `${resolve(cwd, config.baseDir)}/**/*.examples.js`
+],
   outdir: config.outDir,
   litelement: true,
-  plugins: [tsExtensionPlugin(), baseDir(), orderElements()],
+  plugins: [tsExtension(), baseDir(), orderElements()],
 };
 
 export function orderElements() {
@@ -42,7 +50,7 @@ export function baseDir() {
   };
 }
 
-export function tsExtensionPlugin() {
+export function tsExtension() {
   return {
     name: 'ts-extensions',
     packageLinkPhase({ customElementsManifest }) {

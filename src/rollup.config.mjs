@@ -38,7 +38,7 @@ const config = {
 const cwd = process.cwd();
 const project = {
   externals: config.externals,
-  packageFile: path.resolve(cwd, './package.json'),
+  packageJSON: fs.readJsonSync(path.resolve(cwd, './package.json')),
   assets: config.assets.map(a => path.resolve(cwd, a)),
   baseDir: path.resolve(cwd, config.baseDir),
   outDir: path.resolve(cwd, config.outDir),
@@ -64,7 +64,7 @@ export default [
     },
     acornInjectPlugins: [importAssertions],
     plugins: [
-      // del({ targets: [project.outDir], hook: 'buildStart', runOnce: true }),
+      project.prod ? cleanOutDir()  : [],
       copyAssets(),
       project.prod ? cssOptimize() : [],
       importAssertionsPlugin(),
@@ -84,6 +84,10 @@ export default [
   },
 ];
 
+function cleanOutDir() {
+  return del({ targets: [project.outDir], hook: 'buildStart', runOnce: true });
+}
+
 function copyAssets() {
   return copy({ copyOnce: true, targets: project.assets.map(src => ({ src, dest: config.outDir }))});
 }
@@ -94,6 +98,7 @@ function createEntrypoints() {
 
 function compileTypescript() {
   return typescript({
+    cacheDir: path.resolve(__dirname, '.rollup.cache', project.packageJSON.name),
     tsconfig: project.tsconfig,
     noEmitOnError: project.prod,
     compilerOptions: { sourceMap: project.sourcemap },
@@ -113,7 +118,7 @@ function minifyJavaScript() {
 }
 
 function inlinePackageVersion() {
-  return replace({ preventAssignment: false, values: { PACKAGE_VERSION: fs.readJsonSync(project.packageFile).version } })
+  return replace({ preventAssignment: false, values: { PACKAGE_VERSION: project.packageJSON.version } });
 }
 
 function postClean() {
@@ -144,9 +149,7 @@ function cleanPackageJson() {
   return {
     name: 'clean-package-json',
     writeBundle: async () => {
-      const json = await fs.readJson(project.packageFile);
-      const packageFile = { ...json, scripts: undefined, devDependencies: undefined };
-      await fs.writeFile(`${project.outDir}/package.json`, JSON.stringify(packageFile, null, 2));
+      await fs.writeFile(`${project.outDir}/package.json`, JSON.stringify({ ...project.packageJSON, scripts: undefined, devDependencies: undefined }, null, 2));
     }
   }
 }

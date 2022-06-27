@@ -1,0 +1,123 @@
+<!doctype html>
+<html bp-theme="dark">
+  <head>
+    <title>Blueprint CLI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://unpkg.com/modern-normalize@1.1.0/modern-normalize.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/tokens/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes/dark.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/typography/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/layout/index.min.css">
+    <link href="https://unpkg.com/prismjs/themes/prism.css" rel="stylesheet" />
+    <style>
+      body {
+        --background: var(--bp-layer-canvas-background);
+        background: var(--background); /* temp */
+      }
+
+      [bp-text] {
+        width: 100%; /* temp */
+      }
+
+      main {
+        padding: 24px;
+        max-width: 980px;
+        margin-inline: auto;
+      }
+
+      pre {
+        margin: 0;
+        line-height: 1em;
+      }
+
+      bp-card {
+        width: 100%; /* temp */
+      }
+    </style>
+  </head>
+  <body bp-text="body">
+    <main bp-layout="block gap:md align:stretch">
+      <bp-alert-group status="warning">
+        <bp-alert>Warning, in alpha. Subject to change at any time.</bp-alert>
+      </bp-alert-group>
+      <div bp-layout="block gap:md align:stretch m-t:lg">
+        <h1 bp-text="banner center">Blueprint CLI</h1>
+        <h2 bp-text="section center">Opinionated CLI for building reusable Web Components</h2>
+
+        <div bp-layout="inline gap:xs inline:center">
+          <bp-button action="outline"><a href="#">Docs</a></bp-button>
+          <bp-button action="outline"><a href="https://github.com/blueprintui/cli">Github</a></bp-button>
+        </div>
+      </div>
+
+      <div bp-layout="block gap:md m-t:lg">
+        <div bp-layout="inline gap:md block:end">
+          <h2 bp-text="heading">Getting Started</h2>
+          <a href="https://badge.fury.io/js/@blueprintui%2Fcli">
+            <img src="https://badge.fury.io/js/@blueprintui%2Fcli.svg" />
+          </a>
+        </div>
+
+        <div bp-layout="grid cols:6 gap:md block:start shrink">
+          <div bp-layout="block gap:md">
+            <p bp-text="body">
+              Blueprint CLI provides an out-of-the-box tool kit for compiling and creating Web Component libraries. This project is still an experimental work in progress.
+            </p>
+      
+            <bp-list>
+              <bp-list-item>Development and Production Builds</bp-list-item>
+              <bp-list-item>Watch Mode</bp-list-item>
+              <bp-list-item>TypeScript</bp-list-item>
+              <bp-list-item>Lit element optimizations</bp-list-item>
+              <bp-list-item>Custom Elements Manifest generation</bp-list-item>
+            </bp-list>
+          </div>  
+          <div bp-layout="block gap:md">
+            <bp-card>
+              <pre><code bp-text="code">$ npm install -g @blueprintui/cli</code></pre>
+              <pre><code bp-text="code">$ bp build</code></pre>
+            </bp-card>
+            <bp-card>
+              <pre><code bp-text="code">$ bp build --watch</code></pre>
+              <pre><code bp-text="code">$ bp build --config blueprint.config.js</code></pre>
+            </bp-card>
+          </div>
+        </div>
+
+        <h2 bp-text="section" bp-layout="m-t:lg">Configuration</h2>
+
+        <p bp-text="body">
+          The <span>blueprint.config.js</span> can be used to customize certain aspects of the build. Below are the default values unless otherwise specified.
+        </p>
+
+        <bp-card>
+<pre><code bp-text="code">
+// blueprint.config.js (defaults)
+
+export default {
+  library: {
+    externals: [],
+    assets: ['./README.md', './LICENSE.md', './package.json'],
+    baseDir: './src',
+    outDir: './dist/lib',
+    entryPoints: ['./src/**/index.ts'],
+    tsconfig: './tsconfig.lib.json',
+    sourcemap: false,
+  }
+}
+</code>
+</pre>
+        </bp-card>
+      </div>
+    </main>
+    <script type="module">
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/button.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/alert.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/link.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/card.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/list.js/+esm';
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

@@ -7,6 +7,8 @@
 Blueprint CLI provides an out-of-the-box tool kit for compiling and creating
 Web Component libraries. This project is still an experimental work in progress.
 
+[Documentation](https://cli.blueprintui.dev/)
+
 | Command      | Description                   |
 | ------------ | ----------------------------- |
 | build        | Build library for production |

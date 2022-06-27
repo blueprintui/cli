@@ -20,10 +20,9 @@ program
   .command('build')
   .option('--config', 'path for custom config')
   .option('--watch')
-  .option('--prod')
   .description('build library')
   .action(async (options, command) => {
-    process.env.BLUEPRINTUI_BUILD = options.prod || !options.watch ? 'production' : 'development';
+    process.env.BLUEPRINTUI_BUILD = !options.watch ? 'production' : 'development';
     process.env.BLUEPRINTUI_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');
     buildRollup(options);
   });
