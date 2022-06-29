@@ -11,7 +11,8 @@ Web Component libraries. This project is still an experimental work in progress.
 
 | Command      | Description                   |
 | ------------ | ----------------------------- |
-| build        | Build library for production |
+| build        | Build library for production  |
+| generate     | Generate Library Project      |
 
 | Options        | Description                                |
 | -------------- | ------------------------------------------ |

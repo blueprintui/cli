@@ -2,10 +2,21 @@
 
 import * as url from 'url';
 import { path } from 'zx';
+import { cwd } from 'process';
 import { spinner } from 'zx/experimental';
 import { rollup, watch } from 'rollup';
 import { program } from 'commander';
 import loadConfigFile from 'rollup/loadConfigFile';
+import { cp, lstat, readdir } from 'fs/promises';
+import { readFileSync, writeFileSync } from 'fs';
+import { join, resolve }  from 'path';
+
+const deepReadDir = async (dirPath) => await Promise.all(
+  (await readdir(dirPath)).map(async (entity) => {
+    const path = join(dirPath, entity)
+    return (await lstat(path)).isDirectory() ? await deepReadDir(path) : path
+  }),
+);
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -23,8 +34,23 @@ program
   .description('build library')
   .action(async (options, command) => {
     process.env.BLUEPRINTUI_BUILD = !options.watch ? 'production' : 'development';
-    process.env.BLUEPRINTUI_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');
+    process.env.BLUEPRINTUI_CONFIG = command.args[0] ? resolve(command.args[0]) : resolve('./blueprint.config.js');
     buildRollup(options);
+  });
+
+program
+  .command('new')
+  .argument('<library name>', 'library name')
+  .description('generate library')
+  .action(async (name, command) => {
+    const outPath = resolve(cwd(), `./${name}`);
+    await cp(resolve(__dirname, './project'), outPath, { recursive: true });
+
+    const files = (await deepReadDir(outPath))?.flat(Number.POSITIVE_INFINITY);
+    files.forEach(file => {
+      const value = readFileSync(file, 'utf8').toString();
+      writeFileSync(file, value.replaceAll('{{LIBRARY}}', name));
+    });
   });
 
 program.parse();

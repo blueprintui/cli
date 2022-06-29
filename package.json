@@ -7,8 +7,9 @@
     "bp": "./src/index.mjs"
   },
   "scripts": {
+    "bp": "./src/index.mjs",
     "start": "cd docs && lite-server",
-    "publish": "cds src && npm publish --access public",
+    "publish": "npm publish --access public",
     "deploy": "firebase deploy --only hosting:blueprintui-cli"
   },
   "author": "Cory Rylan",

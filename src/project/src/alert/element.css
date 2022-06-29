@@ -1,0 +1,57 @@
+:host {
+  --background: #bed5f2;
+  --color: #2d2d2d;
+  --font-family: Helvetica, Arial, "Lucida Grande", sans-serif;
+  --gap: 12px;
+  --padding: 12px;
+  display: block;
+  width: 100%;
+}
+
+.private-host {
+  background: var(--background);
+  font-family: var(--font-family);
+  color: var(--color);
+  gap: var(--gap);
+  padding: var(--padding);
+  display: flex;
+  align-items: center;
+}
+
+[part='icon'] {
+  --color: var(--icon-color);
+}
+
+[part='close'] {
+  --color: currentcolor;
+}
+
+:host([status='success']) {
+  --background: #b2e4ba;
+}
+
+:host([status='warning']) {
+  --background: #ededa4;
+}
+
+:host([status='danger']) {
+  --background: #f0baba;
+}
+
+button {
+  background: none;
+  border: 0;
+  position: absolute;
+  right: 12px;
+  font-size: 30px;
+  height: 32px;
+  width: 32px;
+  padding: 0;
+  cursor: pointer;
+  color: hsla(0, 0%, 0%, 0.4);
+  background: hsla(0, 0%, 0%, 0.05);
+}
+
+button:hover {
+  background: hsla(0, 0%, 0%, 0.1);
+}

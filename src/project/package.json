@@ -1,0 +1,43 @@
+{
+  "name": "{{LIBRARY}}",
+  "version": "0.0.0",
+  "main": "./index.js",
+  "module": "./index.js",
+  "typings": "./index.d.ts",
+  "type": "module",
+  "customElements": "./custom-elements.json",
+  "homepage": "https://cli.blueprintui.dev",
+  "keywords": ["web components", "blueprintui"],
+  "license": "MIT",
+  "description": "{{LIBRARY}} web component library",
+  "scripts": {
+    "start": "bp build --watch",
+    "build": "bp build"
+  },
+  "files": [
+    "*"
+  ],
+  "sideEffects": [
+    "./include/*.js"
+  ],
+  "exports": {
+    "./custom-elements.json": "./custom-elements.json",
+    ".": "./index.js",
+    "./include/*": "./include/*",
+    "./*": "./*/index.js"
+  },
+  "author": {
+    "name": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://cli.blueprintui.dev"
+  },
+  "dependencies": {
+    "lit": "^2.2.5"
+  },
+  "devDependencies": {
+    "@blueprintui/cli": "^0.0.5",
+    "typescript": "^4.6.4"
+  }
+}
