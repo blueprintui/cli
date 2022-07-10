@@ -76,6 +76,7 @@ export default [
       project.prod ? minifyHTML.default() : [],
       project.prod ? minifyJavaScript() : [],
       project.prod ? inlinePackageVersion() : [],
+      project.prod ? patchSuperMinify() : [],
       project.prod ? postClean(): [],
       project.prod ? packageCheck() : [],
       project.prod ? customElementsAnalyzer() : [],
@@ -119,6 +120,16 @@ function minifyJavaScript() {
 
 function inlinePackageVersion() {
   return replace({ preventAssignment: false, values: { PACKAGE_VERSION: project.packageJSON.version } });
+}
+
+function patchSuperMinify() {
+  return replace({
+    preventAssignment: false,
+      values: {
+        'super(...arguments),': 'super(...arguments);',
+        'super(),': 'super();',
+      }, // safari 15 and latest chromium pupeteer bug with minification optimization in terser
+    });
 }
 
 function postClean() {

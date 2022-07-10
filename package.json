@@ -1,6 +1,6 @@
 {
   "name": "@blueprintui/cli",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "",
   "main": "./index.mjs",
   "bin": {
@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@custom-elements-manifest/analyzer": "^0.6.3",
-    "@lit/ts-transformers": "^1.1.1",
+    "@lit/ts-transformers": "1.1.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^4.0.0",
     "@rollup/plugin-typescript": "^8.3.3",
