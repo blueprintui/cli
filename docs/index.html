@@ -1,20 +1,16 @@
 <!doctype html>
-<html bp-theme="dark">
+<html lang="en-us" bp-theme="dark">
   <head>
     <title>Blueprint CLI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="https://unpkg.com/modern-normalize@1.1.0/modern-normalize.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/tokens@0.0.3/index.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes@0.0.3/dark.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/layout@0.0.2/index.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/typography@0.0.4/index.min.css">
+    <meta name="description" content="Blueprint CLI - Opinionated CLI for building reusable Web Components">
+    <link rel="stylesheet" href="https://unpkg.com/modern-normalize/modern-normalize.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/tokens/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes/dark.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/layout/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/typography/index.min.css">
     <link href="https://unpkg.com/prismjs@1.28.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
-      body {
-        --background: var(--bp-layer-canvas-background);
-        background: var(--background); /* temp */
-      }
-
       main {
         padding: 24px;
         max-width: 980px;
@@ -23,6 +19,10 @@
 
       :not(pre)>code[class*=language-], pre[class*=language-] {
         background: var(--bp-layer-container-background-200);
+      }
+
+      .token.comment {
+        color: #ccc;
       }
     </style>
   </head>
@@ -44,8 +44,8 @@
       <div bp-layout="block gap:md m-t:lg">
         <div bp-layout="inline gap:md block:end">
           <h2 bp-text="heading">Getting Started</h2>
-          <a href="https://badge.fury.io/js/@blueprintui%2Fcli">
-            <img src="https://badge.fury.io/js/@blueprintui%2Fcli.svg" />
+          <a href="https://badge.fury.io/js/@blueprintui%2Fcli" aria-label="npm package">
+            <img src="https://badge.fury.io/js/@blueprintui%2Fcli.svg" alt="npm package version" width="126px" height="20px" />
           </a>
         </div>
 
@@ -98,7 +98,6 @@ export default {
     <script type="module">
       import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/button.js/+esm';
       import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/alert.js/+esm';
-      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/link.js/+esm';
       import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/card.js/+esm';
       import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/list.js/+esm';
     </script>
