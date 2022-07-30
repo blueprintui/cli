@@ -14,27 +14,13 @@ import { importAssertions } from 'acorn-import-assertions';
 import { idiomaticDecoratorsTransformer, constructorCleanupTransformer } from '@lit/ts-transformers';
 import { fileURLToPath } from 'url';
 import { importAssertionsPlugin } from './import-assert.mjs';
+import { runCustomElementsAnalyzer, getUserConfig } from './utils.mjs';
 // import { importAssertionsPlugin } from 'rollup-plugin-import-assert';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let userConfig = { };
-if (process.env.BLUEPRINTUI_CONFIG) {
-  userConfig = await import(process.env.BLUEPRINTUI_CONFIG);
-}
-
-const config = {
-  externals: [],
-  assets: ['./README.md', './LICENSE.md', './package.json'],
-  baseDir: './src',
-  outDir: './dist/lib',
-  entryPoints: ['./src/**/index.ts'],
-  tsconfig: './tsconfig.lib.json',
-  sourcemap: false,
-  ...userConfig.default?.library
-};
-
+const config = await getUserConfig();
 const cwd = process.cwd();
 const project = {
   externals: config.externals,
@@ -148,8 +134,7 @@ function customElementsAnalyzer() {
       if (copied) {
         return;
       } else {
-        const cemPath = path.resolve('node_modules', '@custom-elements-manifest/analyzer/index.js');
-        await $`${cemPath} analyze --config ${project.customElementsManifestConfig}`;
+        await runCustomElementsAnalyzer(project.customElementsManifestConfig);
         copied = true;
       }
     }

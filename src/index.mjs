@@ -10,6 +10,7 @@ import loadConfigFile from 'rollup/loadConfigFile';
 import { cp, lstat, readdir } from 'fs/promises';
 import { readFileSync, writeFileSync } from 'fs';
 import { join, resolve }  from 'path';
+import { getUserConfig } from './utils.mjs';
 
 const deepReadDir = async (dirPath) => await Promise.all(
   (await readdir(dirPath)).map(async (entity) => {
@@ -34,7 +35,7 @@ program
   .description('build library')
   .action(async (options, command) => {
     process.env.BLUEPRINTUI_BUILD = !options.watch ? 'production' : 'development';
-    process.env.BLUEPRINTUI_CONFIG = command.args[0] ? resolve(command.args[0]) : resolve('./blueprint.config.js');
+    process.env.BLUEPRINTUI_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');
     buildRollup(options);
   });
 
@@ -51,6 +52,35 @@ program
       const value = readFileSync(file, 'utf8').toString();
       writeFileSync(file, value.replaceAll('{{LIBRARY}}', name));
     });
+  });
+
+program
+  .command('api')
+  .option('--update')
+  .option('--test')
+  .description('verify and update custom elements manifest API lockfile')
+  .action(async (options, command) => {
+    process.env.BLUEPRINTUI_BUILD = !options.watch ? 'production' : 'development';
+    process.env.BLUEPRINTUI_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');
+
+    const config = await getUserConfig();
+    const lockfilePath = config.customElementsManifestLockFile ? path.resolve(config.customElementsManifestLockFile) : path.resolve('./custom-elements.lock.json');
+    const manifestPath = path.resolve(config.outDir, './custom-elements.json');
+    const lockfile = readFileSync(lockfilePath, 'utf8').toString();
+    const manifest = readFileSync(manifestPath, 'utf8').toString();
+
+    if (options.test) {      
+      if (lockfile !== manifest) {
+        console.error(status.error, '🚫 new custom element API changes detected, run "bp api --update" to update the custom-elements.lock.json');
+      } else {
+        console.log(status.success, `✅ No custom element API changes detected`);
+      }
+    }
+
+    if (options.update) {
+      writeFileSync(lockfilePath, manifest);
+      console.log(status.success, `🔏 custom-elements.lock.json updated to latest API changes`);
+    }
   });
 
 program.parse();

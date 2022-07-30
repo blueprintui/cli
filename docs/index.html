@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Blueprint CLI - Opinionated CLI for building reusable Web Components">
     <link rel="stylesheet" href="https://unpkg.com/modern-normalize/modern-normalize.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/tokens/index.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes/dark.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/layout/index.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/typography/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/tokens@latest/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes@latest/dark.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/layout@latest/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/typography@latest/index.min.css">
     <link href="https://unpkg.com/prismjs@1.28.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
       main {
@@ -36,7 +36,7 @@
         <h2 bp-text="section center">Opinionated CLI for building reusable Web Components</h2>
 
         <div bp-layout="inline gap:xs inline:center">
-          <bp-button action="outline"><a href="#">Docs</a></bp-button>
+          <bp-button action="outline"><a href="https://github.com/blueprintui/cli">API Docs</a></bp-button>
           <bp-button action="outline"><a href="https://github.com/blueprintui/cli">Github</a></bp-button>
         </div>
       </div>
@@ -55,13 +55,13 @@
               Blueprint CLI provides an out-of-the-box tool kit for compiling and creating Web Component libraries. This project is still an experimental work in progress.
             </p>
       
-            <bp-list>
-              <bp-list-item>Development and Production Builds</bp-list-item>
-              <bp-list-item>Watch Mode</bp-list-item>
-              <bp-list-item>TypeScript</bp-list-item>
-              <bp-list-item>Lit element optimizations</bp-list-item>
-              <bp-list-item>Custom Elements Manifest generation</bp-list-item>
-            </bp-list>
+            <ul bp-text="list">
+              <li>Development and Production Builds</li>
+              <li>Watch Mode</li>
+              <li>TypeScript</li>
+              <li>Lit element optimizations</li>
+              <li>Custom Elements Manifest generation</li>
+            </ul>
           </div>  
           <div bp-layout="block gap:md">
 <pre bp-text="code:block" class="language-bash"><code >$ npm install -g @blueprintui/cli
@@ -84,6 +84,7 @@ export default {
   library: {
     externals: [],
     assets: ['./README.md', './LICENSE.md', './package.json'],
+    customElementsManifestLockFile: './custom-elements.lock.json',
     baseDir: './src',
     outDir: './dist/lib',
     entryPoints: ['./src/**/index.ts'],
@@ -96,10 +97,9 @@ export default {
       </div>
     </main>
     <script type="module">
-      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/button.js/+esm';
-      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/alert.js/+esm';
-      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/card.js/+esm';
-      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components/include/list.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@0.0.12/include/button.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@0.0.12/include/alert.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@0.0.12/include/card.js/+esm';
     </script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-core.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs/plugins/autoloader/prism-autoloader.min.js"></script>
