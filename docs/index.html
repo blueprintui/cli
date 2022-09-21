@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Blueprint CLI - Opinionated CLI for building reusable Web Components">
     <link rel="stylesheet" href="https://unpkg.com/modern-normalize/modern-normalize.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/tokens@latest/index.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes@latest/dark.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes@latest/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes@latest/dark/index.min.css">
     <link rel="stylesheet" href="https://unpkg.com/@blueprintui/layout@latest/index.min.css">
     <link rel="stylesheet" href="https://unpkg.com/@blueprintui/typography@latest/index.min.css">
     <link href="https://unpkg.com/prismjs@1.28.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
@@ -34,10 +34,9 @@
       <div bp-layout="block gap:md align:stretch m-t:md">
         <h1 bp-text="banner center">Blueprint CLI</h1>
         <h2 bp-text="section center">Opinionated CLI for building reusable Web Components</h2>
-
-        <div bp-layout="inline gap:xs inline:center">
-          <bp-button action="outline"><a href="https://github.com/blueprintui/cli">API Docs</a></bp-button>
-          <bp-button action="outline"><a href="https://github.com/blueprintui/cli">Github</a></bp-button>
+        <div bp-layout="inline gap:xs m-t:sm inline:center">
+          <bp-button action="outline" status="accent"><a href="https://github.com/blueprintui/cli">API Docs</a></bp-button>
+          <bp-button action="outline" status="accent"><a href="https://github.com/blueprintui/cli">Github</a></bp-button>
         </div>
       </div>
 
@@ -97,9 +96,9 @@ export default {
       </div>
     </main>
     <script type="module">
-      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@0.0.12/include/button.js/+esm';
-      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@0.0.12/include/alert.js/+esm';
-      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@0.0.12/include/card.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@0.0.18/include/button.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@0.0.18/include/alert.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@0.0.18/include/card.js/+esm';
     </script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-core.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs/plugins/autoloader/prism-autoloader.min.js"></script>

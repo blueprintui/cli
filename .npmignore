@@ -1,2 +1,4 @@
 package-lock.json
 docs
+.firebaserc
+firebase.json

@@ -1,9 +1,7 @@
-import { $, path } from 'zx';
+import { cli } from '@custom-elements-manifest/analyzer/cli.js';
 
 export async function runCustomElementsAnalyzer(customElementsManifestConfig) {
-  const cemPath = path.resolve('node_modules', '@custom-elements-manifest/analyzer/index.js');
-  $.verbose = false;
-  return await $`${cemPath} analyze --config ${customElementsManifestConfig} --quiet`;
+  return await cli({ argv: ['analyze', '--quiet', '--config', customElementsManifestConfig] });
 }
 
 export async function getUserConfig() {
