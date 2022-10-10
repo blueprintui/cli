@@ -7,7 +7,7 @@ import copy from 'rollup-plugin-copy';
 import del from 'rollup-plugin-delete';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
 import execute from 'rollup-plugin-shell';
-import { $, fs, glob, path } from 'zx';
+import { fs, glob, path } from 'zx';
 import { extname } from 'path';
 import { terser } from 'rollup-plugin-terser';
 import { importAssertions } from 'acorn-import-assertions';
