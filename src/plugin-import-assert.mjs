@@ -1,6 +1,6 @@
 import { path } from 'zx';
 
-// temp workaround due to package "string-to-template-literal" not shipping valid esm module
+// temp workaround due to package "string-to-template-literal" not shipping valid esm module & not compatible to Rollup 3.x
 
 // string-to-template-literal
 var illegalChars = new Map();

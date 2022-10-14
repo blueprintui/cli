@@ -6,7 +6,7 @@ import { cwd } from 'process';
 import { spinner } from 'zx/experimental';
 import { rollup, watch } from 'rollup';
 import { program } from 'commander';
-import loadConfigFile from 'rollup/loadConfigFile';
+import { loadConfigFile } from 'rollup/loadConfigFile';
 import { cp, lstat, readdir } from 'fs/promises';
 import { readFileSync, writeFileSync } from 'fs';
 import { join, resolve }  from 'path';

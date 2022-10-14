@@ -5,17 +5,17 @@ import replace from '@rollup/plugin-replace';
 import virtual from '@rollup/plugin-virtual';
 import copy from 'rollup-plugin-copy';
 import del from 'rollup-plugin-delete';
-import minifyHTML from 'rollup-plugin-minify-html-literals';
 import execute from 'rollup-plugin-shell';
 import { fs, glob, path } from 'zx';
-import { extname } from 'path';
-import { terser } from 'rollup-plugin-terser';
 import { importAssertions } from 'acorn-import-assertions';
 import { idiomaticDecoratorsTransformer, constructorCleanupTransformer } from '@lit/ts-transformers';
 import { fileURLToPath } from 'url';
-import { importAssertionsPlugin } from './import-assert.mjs';
-import { runCustomElementsAnalyzer, getUserConfig } from './utils.mjs';
-// import { importAssertionsPlugin } from 'rollup-plugin-import-assert';
+import { minifyHTML } from './plugin-minify-html-literals.mjs';
+import { importAssertionsPlugin } from './plugin-import-assert.mjs';
+import { minifyJavaScript } from './plugin-minify-javascript.mjs';
+import { customElementsAnalyzer } from './plugin-custom-elements-analyzer.mjs';
+import { writeCache } from './plugin-esm-cache.mjs';
+import { getUserConfig } from './utils.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,14 +58,14 @@ export default [
       nodeResolve({ exportConditions: [project.prod ? 'production' : 'development'] }),
       compileTypescript(),
       project.prod ? [] : typeCheck(),
-      project.prod ? [] : writeCache(),
-      project.prod ? minifyHTML.default() : [],
+      project.prod ? [] : writeCache(project),
+      project.prod ? minifyHTML() : [],
       project.prod ? minifyJavaScript() : [],
       project.prod ? inlinePackageVersion() : [],
       project.prod ? patchSuperMinify() : [],
       project.prod ? postClean(): [],
       project.prod ? packageCheck() : [],
-      project.prod ? customElementsAnalyzer() : [],
+      project.prod ? customElementsAnalyzer(project) : [],
       project.prod ? cleanPackageJson() : []
     ],
   },
@@ -100,10 +100,6 @@ function typeCheck() {
   return execute({ commands: [`tsc --noEmit --project ${project.tsconfig}`], hook: 'buildEnd' });
 }
 
-function minifyJavaScript() {
-  return terser({ ecma: 2022, module: true, format: { comments: false }, compress: { passes: 2, unsafe: true } });
-}
-
 function inlinePackageVersion() {
   return replace({ preventAssignment: false, values: { PACKAGE_VERSION: project.packageJSON.version } });
 }
@@ -126,21 +122,6 @@ function packageCheck() {
   return execute({ commands: [`package-check --cwd ${project.outDir}`], sync: true, hook: 'writeBundle' });
 };
 
-function customElementsAnalyzer() {
-  let copied = false;
-  return {
-    name: 'custom-elements-analyzer',
-    writeBundle: async () => {
-      if (copied) {
-        return;
-      } else {
-        await runCustomElementsAnalyzer(project.customElementsManifestConfig);
-        copied = true;
-      }
-    }
-  };
-}
-
 function cleanPackageJson() {
   return {
     name: 'clean-package-json',
@@ -154,28 +135,5 @@ function cssOptimize() {
   return {
     load(id) { return id.slice(-4) === '.css' ? this.addWatchFile(path.resolve(id)) : null },
     transform: async (css, id) => id.slice(-4) === '.css' ? ({ code: csso.minify(css, { comments: false }).css, map: { mappings: '' } }) : null
-  };
-};
-
-const fileCache = {};
-/**
- * Rollup plugin for local file writes
- * Compares the output of rollup to the current file on disk. If same it will
- * prevent rollup from writting to the file again preventing file watchers from being triggered
- */
-function writeCache() {
-  return {
-    name: 'esm-cache',
-    generateBundle(_options, bundles) {
-      for (const [key, bundle] of Object.entries(bundles)) {
-        const path = `${project.outDir}/${bundle.fileName}`;
-
-        if (extname(path) === '.js' && fileCache[path] !== bundle.code) {
-          fileCache[path] = bundle.code;
-        } else {
-          delete bundles[key];
-        }
-      }
-    },
   };
 };
