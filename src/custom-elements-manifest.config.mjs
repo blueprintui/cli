@@ -1,4 +1,3 @@
-// import { readonlyPlugin } from 'cem-plugin-readonly';
 import { resolve } from 'path';
 
 const cwd = process.cwd();

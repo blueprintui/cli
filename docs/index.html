@@ -1,14 +1,15 @@
 <!doctype html>
-<html lang="en-us" bp-theme="dark">
+<html lang="en-us" bp-theme="modern modern-dark">
   <head>
     <title>Blueprint CLI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Blueprint CLI - Opinionated CLI for building reusable Web Components">
-    <link rel="stylesheet" href="https://unpkg.com/modern-normalize/modern-normalize.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes@latest/index.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes@latest/dark/index.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/layout@latest/index.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/typography@latest/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/modern-normalize@1.1.0/modern-normalize.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes@1.6.0/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes@1.6.0/modern/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/themes@1.6.0/modern-dark/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/typography@1.6.0/index.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintui/layout@1.6.0/index.min.css">
     <link href="https://unpkg.com/prismjs@1.28.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
       main {
@@ -17,12 +18,12 @@
         margin-inline: auto;
       }
 
-      :not(pre)>code[class*=language-], pre[class*=language-] {
-        background: var(--bp-layer-container-background-200);
+      body {
+        background: var(--bp-layer-canvas-background);
       }
 
-      .token.comment {
-        color: #ccc;
+      :not(pre)>code[class*=language-], pre[class*=language-] {
+        background: var(--bp-layer-container-background);
       }
     </style>
   </head>
@@ -96,9 +97,9 @@ export default {
       </div>
     </main>
     <script type="module">
-      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@0.0.18/include/button.js/+esm';
-      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@0.0.18/include/alert.js/+esm';
-      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@0.0.18/include/card.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@1.6.0/include/button.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@1.6.0/include/alert.js/+esm';
+      import 'https://cdn.jsdelivr.net/npm/@blueprintui/components@1.6.0/include/card.js/+esm';
     </script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-core.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs/plugins/autoloader/prism-autoloader.min.js"></script>

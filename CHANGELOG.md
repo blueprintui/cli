@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+- bump dependencies
+- update docs
+
 ## 0.1.0
 - upgrade to Rollup 3
 - improve dependencies and simplify internal plugins for faster builds
