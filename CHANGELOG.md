@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.3
+- bump dependencies
+
 ## 0.1.1
 - bump dependencies
 - update docs
