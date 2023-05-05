@@ -1,4 +1,3 @@
-import * as csso from 'csso';
 import typescript from '@rollup/plugin-typescript';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
@@ -10,8 +9,9 @@ import { fs, glob, path } from 'zx';
 import { importAssertions } from 'acorn-import-assertions';
 import { idiomaticDecoratorsTransformer, constructorCleanupTransformer } from '@lit/ts-transformers';
 import { fileURLToPath } from 'url';
+import { importAssertionsPlugin } from 'rollup-plugin-import-assert';
+import { minifyCSS } from './plugin-minify-css.mjs';
 import { minifyHTML } from './plugin-minify-html-literals.mjs';
-import { importAssertionsPlugin } from './plugin-import-assert.mjs';
 import { minifyJavaScript } from './plugin-minify-javascript.mjs';
 import { customElementsAnalyzer } from './plugin-custom-elements-analyzer.mjs';
 import { writeCache } from './plugin-esm-cache.mjs';
@@ -33,7 +33,7 @@ const project = {
   customElementsManifestConfig: config.customElementsManifestConfig ? path.resolve(cwd, config.customElementsManifestConfig) :  path.resolve(__dirname, './custom-elements-manifest.config.mjs'),
   prod: process.env.BLUEPRINTUI_BUILD === 'production',
   sourcemap: config.sourcemap
-}
+};
 
 export default [
   {
@@ -52,17 +52,16 @@ export default [
     plugins: [
       project.prod ? cleanOutDir()  : [],
       copyAssets(),
-      project.prod ? cssOptimize() : [],
+      project.prod ? minifyCSS() : [],
       importAssertionsPlugin(),
       createEntrypoints(),
       nodeResolve({ exportConditions: [project.prod ? 'production' : 'development'] }),
       compileTypescript(),
-      project.prod ? [] : typeCheck(),
+      typeCheck(),
       project.prod ? [] : writeCache(project),
       project.prod ? minifyHTML() : [],
       project.prod ? minifyJavaScript() : [],
       project.prod ? inlinePackageVersion() : [],
-      project.prod ? patchSuperMinify() : [],
       project.prod ? postClean(): [],
       project.prod ? packageCheck() : [],
       project.prod ? customElementsAnalyzer(project) : [],
@@ -104,16 +103,6 @@ function inlinePackageVersion() {
   return replace({ preventAssignment: false, values: { PACKAGE_VERSION: project.packageJSON.version } });
 }
 
-function patchSuperMinify() {
-  return replace({
-    preventAssignment: false,
-      values: {
-        'super(...arguments),': 'super(...arguments);',
-        'super(),': 'super();',
-      }, // safari 15 and latest chromium pupeteer bug with minification optimization in terser
-    });
-}
-
 function postClean() {
   return del({ targets: [`${project.outDir}/**/.tsbuildinfo`, `${project.outDir}/**/_virtual`], hook: 'writeBundle' });
 }
@@ -130,10 +119,3 @@ function cleanPackageJson() {
     }
   }
 }
-
-function cssOptimize() {
-  return {
-    load(id) { return id.slice(-4) === '.css' ? this.addWatchFile(path.resolve(id)) : null },
-    transform: async (css, id) => id.slice(-4) === '.css' ? ({ code: csso.minify(css, { comments: false }).css, map: { mappings: '' } }) : null
-  };
-};

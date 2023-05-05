@@ -1,5 +1,10 @@
 # Changelog
 
+# 0.2.1
+- update CSS optimization to use lightningcss
+- remove legacy Safari compatibility optimizations
+- bump dependencies
+
 ## 0.1.4
 - bump dependencies
 
