@@ -1,5 +1,9 @@
 # Changelog
 
+# 0.3.0
+- support for jsdoc tagging in custom-elements.json metadata
+- bump dependencies
+
 # 0.2.1
 - update CSS optimization to use lightningcss
 - remove legacy Safari compatibility optimizations

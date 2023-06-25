@@ -3,7 +3,7 @@ import { resolve } from 'path';
 const cwd = process.cwd();
 const baseSrc = resolve(cwd, 'src');
 
-let userConfig = { };
+let userConfig = {};
 if (process.env.BLUEPRINTUI_CONFIG) {
   userConfig = await import(process.env.BLUEPRINTUI_CONFIG);
 }
@@ -23,10 +23,10 @@ export default {
     `${resolve(cwd, config.baseDir)}/**/*.performance.ts`,
     `${resolve(cwd, config.baseDir)}/**/*.stories.ts`,
     `${resolve(cwd, config.baseDir)}/**/*.examples.js`
-],
+  ],
   outdir: config.outDir,
   litelement: true,
-  plugins: [tsExtension(), baseDir(), orderElements()],
+  plugins: [tsExtension(), baseDir(), orderElements(), metadata({ tags: ['docs', 'spec', 'status'] })],
 };
 
 export function orderElements() {
@@ -56,4 +56,24 @@ export function tsExtension() {
       customElementsManifest.modules = JSON.parse(JSON.stringify(customElementsManifest.modules).replace(/\.ts"/g, '.js"'));
     },
   };
+}
+
+function metadata(config = { tags: [] }) {
+  return {
+    analyzePhase({ ts, node, moduleDoc }) {
+      switch (node.kind) {
+        case ts.SyntaxKind.ClassDeclaration:
+          node.jsDoc?.filter(i => i.tags).forEach(jsDoc => {
+            const declaration = moduleDoc.declarations.find(d => d.name === node.name?.getText());
+            jsDoc.tags
+              .filter(tag => config.tags.find(t => t === tag.tagName?.getText()))
+              .forEach(tag => {
+                  declaration.metadata = { ...declaration.metadata, [tag.tagName?.getText()]: tag.comment };
+              });
+          });
+
+          break;
+      }
+    }
+  }
 }
