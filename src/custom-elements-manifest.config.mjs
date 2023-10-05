@@ -29,7 +29,7 @@ export default {
   plugins: [tsExtension(), baseDir(), orderElements(), metadata({ tags: ['docs', 'spec', 'status'] })],
 };
 
-export function orderElements() {
+function orderElements() {
   return {
     name: 'order-elements',
     packageLinkPhase({ customElementsManifest }) {
@@ -38,7 +38,7 @@ export function orderElements() {
   };
 }
 
-export function baseDir() {
+function baseDir() {
   return {
     name: 'base-dir',
     packageLinkPhase({ customElementsManifest }) {
@@ -49,7 +49,7 @@ export function baseDir() {
   };
 }
 
-export function tsExtension() {
+function tsExtension() {
   return {
     name: 'ts-extensions',
     packageLinkPhase({ customElementsManifest }) {

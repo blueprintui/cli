@@ -9,7 +9,10 @@
 - remove legacy Safari compatibility optimizations
 - bump dependencies
 
-## 0.1.4
+## 0.4.0
+- upgrade to TypeScript 5.2.x
+
+## 0.3.0
 - bump dependencies
 
 ## 0.1.3
