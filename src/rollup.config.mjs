@@ -7,10 +7,10 @@ import del from 'rollup-plugin-delete';
 import execute from 'rollup-plugin-shell';
 import { fs, glob, path } from 'zx';
 import { importAssertions } from 'acorn-import-assertions';
+// import { importAttributes } from 'acorn-import-attributes'; // enable when TypeScript supports import attributes
 import { idiomaticDecoratorsTransformer, constructorCleanupTransformer } from '@lit/ts-transformers';
 import { fileURLToPath } from 'url';
-import { importAssertionsPlugin } from 'rollup-plugin-import-assert';
-import { minifyCSS } from './plugin-minify-css.mjs';
+import { css } from './plugin-minify-css.mjs';
 import { minifyHTML } from './plugin-minify-html-literals.mjs';
 import { minifyJavaScript } from './plugin-minify-javascript.mjs';
 import { customElementsAnalyzer } from './plugin-custom-elements-analyzer.mjs';
@@ -48,12 +48,14 @@ export default [
       sourcemap: project.sourcemap,
       sourcemapExcludeSources: true
     },
-    acornInjectPlugins: [importAssertions],
+    acornInjectPlugins: [
+      importAssertions
+      // importAttributes
+    ],
     plugins: [
-      project.prod ? cleanOutDir()  : [],
+      project.prod ? cleanOutDir() : [],
+      css({ minify: project.prod }),
       copyAssets(),
-      project.prod ? minifyCSS() : [],
-      importAssertionsPlugin(),
       createEntrypoints(),
       nodeResolve({ exportConditions: [project.prod ? 'production' : 'development'] }),
       compileTypescript(),

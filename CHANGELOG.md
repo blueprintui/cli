@@ -1,5 +1,17 @@
 # Changelog
 
+# 0.6.0
+- revert rollup 4.0 upgrade
+
+# 0.5.0
+- migrate to TS 5.x
+
+## 0.4.0
+- upgrade to TypeScript 5.2.x
+
+## 0.3.0
+- bump dependencies
+
 # 0.3.0
 - support for jsdoc tagging in custom-elements.json metadata
 - bump dependencies
@@ -7,12 +19,6 @@
 # 0.2.1
 - update CSS optimization to use lightningcss
 - remove legacy Safari compatibility optimizations
-- bump dependencies
-
-## 0.4.0
-- upgrade to TypeScript 5.2.x
-
-## 0.3.0
 - bump dependencies
 
 ## 0.1.3
