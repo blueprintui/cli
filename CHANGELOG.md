@@ -1,5 +1,8 @@
 # Changelog
 
+# 0.7.0
+- lit transformer update
+
 # 0.6.0
 - revert rollup 4.0 upgrade
 
