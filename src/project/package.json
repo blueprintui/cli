@@ -34,10 +34,10 @@
     "url": "https://cli.blueprintui.dev"
   },
   "dependencies": {
-    "lit": "^2.2.5"
+    "lit": "^3.1.4"
   },
   "devDependencies": {
-    "@blueprintui/cli": "^0.1.0",
-    "typescript": "~4.7.4"
+    "@blueprintui/cli": "^0.7.1",
+    "typescript": "~5.4.5"
   }
 }

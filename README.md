@@ -17,7 +17,7 @@ Web Component libraries. This project is still an experimental work in progress.
 
 | Options        | Description                                |
 | -------------- | ------------------------------------------ |
-| --config        | Path for `blueprint.config.js` file          |
+| --config       | Path for `blueprint.config.js` file          |
 | --watch        | Runs build in watch mode for development   |
 
 
@@ -32,7 +32,7 @@ Web Component libraries. This project is still an experimental work in progress.
 
 | Command      | Description                   |
 | ------------ | ----------------------------- |
-| api          | API lockfile management        |
+| api          | API lockfile management       |
 
 | Options        | Description                                                                                     |
 | -------------- | ----------------------------------------------------------------------------------------------- |

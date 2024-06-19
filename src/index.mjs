@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
 import * as url from 'url';
-import { path } from 'zx';
+import { path, spinner } from 'zx';
 import { cwd } from 'process';
-import { spinner } from 'zx/experimental';
 import { rollup, watch } from 'rollup';
 import { program } from 'commander';
 import { loadConfigFile } from 'rollup/loadConfigFile';
