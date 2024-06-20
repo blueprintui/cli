@@ -117,10 +117,6 @@ function buildRollup(args) {
 
         try {
           watcher.on('event', (event) => {
-            if (event.result) {
-              event.result.watchFiles = null;
-            }
-
             switch (event.code) {
               case 'START':
                 console.log(status.info, 'Building...');

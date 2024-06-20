@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0
+- add import attributes support
+
+## 0.7.2
+- bump dependencies
+
 ## 0.7.1
 - bump dependencies
 

@@ -6,8 +6,6 @@ import copy from 'rollup-plugin-copy';
 import del from 'rollup-plugin-delete';
 import execute from 'rollup-plugin-shell';
 import { fs, glob, path } from 'zx';
-import { importAssertions } from 'acorn-import-assertions';
-// import { importAttributes } from 'acorn-import-attributes'; // enable when TypeScript supports import attributes
 import { idiomaticDecoratorsTransformer, constructorCleanupTransformer } from '@lit/ts-transformers';
 import { fileURLToPath } from 'url';
 import { css } from './plugin-minify-css.mjs';
@@ -48,10 +46,6 @@ export default [
       sourcemap: project.sourcemap,
       sourcemapExcludeSources: true
     },
-    acornInjectPlugins: [
-      importAssertions
-      // importAttributes
-    ],
     plugins: [
       project.prod ? cleanOutDir() : [],
       css({ minify: project.prod }),

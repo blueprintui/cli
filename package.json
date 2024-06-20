@@ -1,6 +1,6 @@
 {
   "name": "@blueprintui/cli",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "description": "",
   "main": "./index.mjs",
   "bin": {
@@ -31,8 +31,8 @@
     "path": "0.12.7",
     "rollup": "4.18.0",
     "rollup-plugin-copy": "3.5.0",
+    "rollup-plugin-css-modules": "0.1.2",
     "rollup-plugin-delete": "2.0.0",
-    "rollup-plugin-import-css": "3.5.0",
     "rollup-plugin-shell": "1.0.9",
     "terser": "5.31.1",
     "tslib": "2.6.3",
