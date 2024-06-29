@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.1
+- update to typescript 5.5.x
+
 ## 0.8.0
 - add import attributes support
 
