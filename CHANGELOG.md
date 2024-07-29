@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.0
+- feat: add vscode metadata support
+
 ## 0.8.1
 - update to typescript 5.5.x
 

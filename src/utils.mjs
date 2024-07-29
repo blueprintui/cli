@@ -12,10 +12,10 @@ export async function getUserConfig() {
 
   return {
     externals: [],
-    assets: ['./README.md', './LICENSE.md', './package.json'],
+    assets: [],
     customElementsManifestLockFile: './custom-elements.lock.json',
     baseDir: './src',
-    outDir: './dist/lib',
+    outDir: './dist',
     entryPoints: ['./src/**/index.ts'],
     tsconfig: './tsconfig.lib.json',
     sourcemap: false,

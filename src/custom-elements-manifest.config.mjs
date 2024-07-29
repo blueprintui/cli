@@ -1,4 +1,5 @@
 import { resolve } from 'path';
+import { customElementVsCodePlugin } from 'custom-element-vs-code-integration';
 
 const cwd = process.cwd();
 const baseSrc = resolve(cwd, 'src');
@@ -10,7 +11,7 @@ if (process.env.BLUEPRINTUI_CONFIG) {
 
 const config = {
   baseDir: './src',
-  outDir: './dist/lib',
+  outDir: './dist',
   ...userConfig?.default?.library
 };
 
@@ -26,7 +27,15 @@ export default {
   ],
   outdir: config.outDir,
   litelement: true,
-  plugins: [tsExtension(), baseDir(), orderElements(), metadata({ tags: ['docs', 'spec', 'status'] })],
+  plugins: [
+    tsExtension(),
+    baseDir(),
+    orderElements(),
+    metadata({ tags: ['docs', 'spec', 'status'] }),
+    customElementVsCodePlugin({
+      outdir: config.outDir
+    })
+  ],
 };
 
 function orderElements() {

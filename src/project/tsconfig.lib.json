@@ -6,7 +6,7 @@
     "isolatedModules": true,
     "useDefineForClassFields": true,
     "noEmit": true,
-    "tsBuildInfoFile": "./dist/lib/.tsbuildinfo"
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "exclude": [
     "dist",

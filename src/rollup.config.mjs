@@ -60,8 +60,7 @@ export default [
       project.prod ? inlinePackageVersion() : [],
       project.prod ? postClean(): [],
       project.prod ? packageCheck() : [],
-      project.prod ? customElementsAnalyzer(project) : [],
-      project.prod ? cleanPackageJson() : []
+      project.prod ? customElementsAnalyzer(project) : []
     ],
   },
 ];
@@ -105,13 +104,4 @@ function postClean() {
 
 function packageCheck() {
   return execute({ commands: [`package-check --cwd ${project.outDir}`], sync: true, hook: 'writeBundle' });
-};
-
-function cleanPackageJson() {
-  return {
-    name: 'clean-package-json',
-    writeBundle: async () => {
-      await fs.writeFile(`${project.outDir}/package.json`, JSON.stringify({ ...project.packageJSON, scripts: undefined, devDependencies: undefined }, null, 2));
-    }
-  }
 }
