@@ -4,7 +4,6 @@ import replace from '@rollup/plugin-replace';
 import virtual from '@rollup/plugin-virtual';
 import copy from 'rollup-plugin-copy';
 import del from 'rollup-plugin-delete';
-import execute from 'rollup-plugin-shell';
 import { fs, glob, path } from 'zx';
 import { idiomaticDecoratorsTransformer, constructorCleanupTransformer } from '@lit/ts-transformers';
 import { fileURLToPath } from 'url';
@@ -53,13 +52,11 @@ export default [
       createEntrypoints(),
       nodeResolve({ exportConditions: [project.prod ? 'production' : 'development'] }),
       compileTypescript(),
-      typeCheck(),
       project.prod ? [] : writeCache(project),
       project.prod ? minifyHTML() : [],
       project.prod ? minifyJavaScript() : [],
       project.prod ? inlinePackageVersion() : [],
       project.prod ? postClean(): [],
-      project.prod ? packageCheck() : [],
       project.prod ? customElementsAnalyzer(project) : []
     ],
   },
@@ -90,18 +87,10 @@ function compileTypescript() {
   });
 }
 
-function typeCheck() {
-  return execute({ commands: [`tsc --noEmit --project ${project.tsconfig}`], hook: 'buildEnd' });
-}
-
 function inlinePackageVersion() {
   return replace({ preventAssignment: false, values: { PACKAGE_VERSION: project.packageJSON.version } });
 }
 
 function postClean() {
   return del({ targets: [`${project.outDir}/**/.tsbuildinfo`, `${project.outDir}/**/_virtual`], hook: 'writeBundle' });
-}
-
-function packageCheck() {
-  return execute({ commands: [`package-check --cwd ${project.outDir}`], sync: true, hook: 'writeBundle' });
 }

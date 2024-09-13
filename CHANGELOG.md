@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.0
+- feat: improved package publishing verification
+
 ## 0.9.0
 - feat: add vscode metadata support
 

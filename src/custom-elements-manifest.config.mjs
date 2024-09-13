@@ -33,7 +33,8 @@ export default {
     orderElements(),
     metadata({ tags: ['docs', 'spec', 'status'] }),
     customElementVsCodePlugin({
-      outdir: config.outDir
+      outdir: config.outDir,
+      hideLogs: true
     })
   ],
 };

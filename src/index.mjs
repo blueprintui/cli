@@ -10,6 +10,8 @@ import { cp, lstat, readdir } from 'fs/promises';
 import { readFileSync, writeFileSync } from 'fs';
 import { join, resolve }  from 'path';
 import { getUserConfig } from './utils.mjs';
+import { publint } from 'publint';
+import { formatMessage } from 'publint/utils';
 
 const deepReadDir = async (dirPath) => await Promise.all(
   (await readdir(dirPath)).map(async (entity) => {
@@ -35,7 +37,7 @@ program
   .action(async (options, command) => {
     process.env.BLUEPRINTUI_BUILD = !options.watch ? 'production' : 'development';
     process.env.BLUEPRINTUI_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');
-    buildRollup(options);
+    await buildRollup(options);
   });
 
 program
@@ -85,7 +87,7 @@ program
 program.parse();
 
 function buildRollup(args) {
-  loadConfigFile(path.resolve(__dirname, './rollup.config.mjs'), {}).then(
+  return loadConfigFile(path.resolve(__dirname, './rollup.config.mjs'), {}).then(
     async ({ options, warnings }) => {
       if (warnings.count) {
         console.log(`${warnings.count} warnings`);
@@ -106,8 +108,20 @@ function buildRollup(args) {
         }
         if (bundle) {
           const end = Date.now();
-          console.log(status.success, `Completed in ${(end - start) / 1000} seconds 🎉`);
           await bundle.close();
+
+          const { messages } = await spinner('Verifying Package...', async () => await publint({
+            strict: true
+          }));
+
+          if (messages.length) {
+            const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
+            for (const message of messages) {
+              console.log(formatMessage(message, pkg))
+            }
+          } else {
+            console.log(status.success, `Success in ${(end - start) / 1000} seconds 🎉`);
+          }
         }
         process.exit(buildFailed ? 1 : 0);
       }
