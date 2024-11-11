@@ -1,6 +1,6 @@
-import { Alert } from 'library/alert';
+import { Alert } from '../alert/index.js';
 
-customElements.get('bp-alert') || customElements.define('ui-alert', Alert);
+customElements.get('ui-alert') || customElements.define('ui-alert', Alert);
 
 declare global {
   interface HTMLElementTagNameMap {

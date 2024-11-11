@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.0
+- feat: improved starter project generation
+- fix: bump dependencies
+
 ## 0.10.0
 - feat: improved package publishing verification
 

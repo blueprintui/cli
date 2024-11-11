@@ -1,6 +1,6 @@
 import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators/property.js';
-import styles from './element.css' assert { type: 'css' };
+import styles from './element.css' with { type: 'css' };
 
 /**
  * @element ui-alert

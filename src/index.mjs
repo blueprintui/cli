@@ -111,11 +111,12 @@ function buildRollup(args) {
           await bundle.close();
 
           const { messages } = await spinner('Verifying Package...', async () => await publint({
-            strict: true
+            strict: true,
+            pkgDir: resolve(cwd())
           }));
 
           if (messages.length) {
-            const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
+            const pkg = JSON.parse(readFileSync(resolve(cwd(),'./package.json'), 'utf8'));
             for (const message of messages) {
               console.log(formatMessage(message, pkg))
             }

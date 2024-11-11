@@ -1,43 +1,59 @@
 {
   "name": "{{LIBRARY}}",
   "version": "0.0.0",
-  "main": "./index.js",
-  "module": "./index.js",
-  "typings": "./index.d.ts",
   "type": "module",
   "customElements": "./custom-elements.json",
   "homepage": "https://cli.blueprintui.dev",
   "keywords": ["web components", "blueprintui"],
   "license": "MIT",
-  "description": "{{LIBRARY}} web component library",
+  "description": "test-project web component library",
   "scripts": {
-    "start": "bp build --watch",
-    "build": "bp build"
+    "start": "NODE_NO_WARNINGS=1 serve & npm run build:watch",
+    "build": "bp build",
+    "build:watch": "bp build --watch"
   },
   "files": [
-    "*"
+    "package.json",
+    "README.md",
+    "LICENSE.md",
+    "dist/**/*"
   ],
   "sideEffects": [
     "./include/*.js"
   ],
   "exports": {
-    "./custom-elements.json": "./custom-elements.json",
-    ".": "./index.js",
-    "./include/*": "./include/*",
-    "./*": "./*/index.js"
+    "./package.json": "./package.json",
+    "./custom-elements.json": "./dist/custom-elements.json",
+    "./include/*.js": {
+      "types": "./dist/include/*.d.ts",
+      "default": "./dist/include/*.js"
+    },
+    "./*": {
+      "types": "./dist/*/index.d.ts",
+      "default": "./dist/*/index.js"
+    },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
   "author": {
     "name": ""
   },
   "repository": {
     "type": "git",
-    "url": "https://cli.blueprintui.dev"
+    "url": "git+https://github.com/blueprintui/cli.git"
   },
   "dependencies": {
-    "lit": "^3.1.4"
+    "lit": "^3.2.0"
   },
   "devDependencies": {
-    "@blueprintui/cli": "^0.7.1",
-    "typescript": "~5.4.5"
+    "@lit/reactive-element": "^2.0.4",
+    "@blueprintui/cli": "^0.10.0",
+    "lit-html": "^3.2.0",
+    "lit-element": "^4.1.0",
+    "serve": "14.2.3",
+    "tslib": "~2.7.0",
+    "typescript": "~5.6.2"
   }
 }

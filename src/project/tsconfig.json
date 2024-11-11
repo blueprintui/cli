@@ -10,7 +10,6 @@
     "resolveJsonModule": true,
     "outDir": "./dist",
     "declaration": true,
-    "types": ["jasmine"],
     "alwaysStrict": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
@@ -24,10 +23,7 @@
     "inlineSourceMap": false,
     "importHelpers": true,
     "baseUrl": "./",
-    "rootDir": "./src",
-    "paths": {
-      "library/*": ["./src/*"]
-    }
+    "rootDir": "./src"
   },
   "exclude": ["dist", "node_modules"]
 }
