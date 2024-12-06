@@ -1,3 +1,4 @@
+import defu from 'defu';
 import typescript from '@rollup/plugin-typescript';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
@@ -17,49 +18,54 @@ import { getUserConfig } from './utils.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const config = await getUserConfig();
+const userConfig = await getUserConfig();
 const cwd = process.cwd();
 const project = {
-  externals: config.externals,
+  externals: userConfig.externals,
   packageJSON: fs.readJsonSync(path.resolve(cwd, './package.json')),
-  assets: config.assets.map(a => path.resolve(cwd, a)),
-  baseDir: path.resolve(cwd, config.baseDir),
-  outDir: path.resolve(cwd, config.outDir),
-  entryPoints: config.entryPoints.map(e => path.resolve(cwd, e)),
-  tsconfig: path.resolve(cwd, config.tsconfig),
-  customElementsManifestConfig: config.customElementsManifestConfig ? path.resolve(cwd, config.customElementsManifestConfig) :  path.resolve(__dirname, './custom-elements-manifest.config.mjs'),
+  assets: userConfig.assets.map(a => path.resolve(cwd, a)),
+  baseDir: path.resolve(cwd, userConfig.baseDir),
+  outDir: path.resolve(cwd, userConfig.outDir),
+  entryPoints: userConfig.entryPoints.map(e => path.resolve(cwd, e)),
+  tsconfig: path.resolve(cwd, userConfig.tsconfig),
+  customElementsManifestConfig: userConfig.customElementsManifestConfig ? path.resolve(cwd, userConfig.customElementsManifestConfig) :  path.resolve(__dirname, './custom-elements-manifest.config.mjs'),
   prod: process.env.BLUEPRINTUI_BUILD === 'production',
-  sourcemap: config.sourcemap
+  sourcemap: userConfig.sourcemap,
+  rollupOptions: userConfig.rollupOptions
 };
 
-export default [
-  {
-    external: project.externals,
-    input: 'library-entry-points',
-    treeshake: false,
-    preserveEntrySignatures: 'strict',
-    output: {
-      format: 'esm',
-      dir: project.outDir,
-      preserveModules: true,
-      sourcemap: project.sourcemap,
-      sourcemapExcludeSources: true
-    },
-    plugins: [
-      project.prod ? cleanOutDir() : [],
-      css({ minify: project.prod }),
-      copyAssets(),
-      createEntrypoints(),
-      nodeResolve({ exportConditions: [project.prod ? 'production' : 'development'] }),
-      compileTypescript(),
-      project.prod ? [] : writeCache(project),
-      project.prod ? minifyHTML() : [],
-      project.prod ? minifyJavaScript() : [],
-      project.prod ? inlinePackageVersion() : [],
-      project.prod ? postClean(): [],
-      project.prod ? customElementsAnalyzer(project) : []
-    ],
+const defaultConfig = {
+  external: project.externals,
+  input: 'library-entry-points',
+  treeshake: false,
+  preserveEntrySignatures: 'strict',
+  output: {
+    format: 'esm',
+    dir: project.outDir,
+    preserveModules: true,
+    sourcemap: project.sourcemap,
+    sourcemapExcludeSources: true
   },
+  plugins: [
+    project.prod ? cleanOutDir() : [],
+    css({ minify: project.prod }),
+    copyAssets(),
+    createEntrypoints(),
+    nodeResolve({ exportConditions: [project.prod ? 'production' : 'development'] }),
+    compileTypescript(),
+    project.prod ? [] : writeCache(project),
+    project.prod ? minifyHTML() : [],
+    project.prod ? minifyJavaScript() : [],
+    project.prod ? inlinePackageVersion() : [],
+    project.prod ? postClean(): [],
+    project.prod ? customElementsAnalyzer(project) : []
+  ],
+};
+
+const config = defu(project.rollupOptions, defaultConfig);
+
+export default [
+  config,
 ];
 
 function cleanOutDir() {
@@ -67,7 +73,7 @@ function cleanOutDir() {
 }
 
 function copyAssets() {
-  return copy({ copyOnce: true, targets: project.assets.map(src => ({ src, dest: config.outDir }))});
+  return copy({ copyOnce: true, targets: project.assets.map(src => ({ src, dest: userConfig.outDir }))});
 }
 
 function createEntrypoints() {

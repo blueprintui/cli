@@ -24,6 +24,7 @@ export async function getUserConfig() {
     entryPoints: ['./src/**/index.ts'],
     tsconfig: './tsconfig.lib.json',
     sourcemap: false,
-    ...userConfig.default?.library
+    ...userConfig.default?.library,
+    rollupOptions: userConfig.default?.rollupOptions || {},
   };
 }
