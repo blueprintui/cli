@@ -38,6 +38,9 @@ importers:
       custom-element-vs-code-integration:
         specifier: 1.4.1
         version: 1.4.1(prettier@2.8.8)
+      defu:
+        specifier: 6.1.4
+        version: 6.1.4
       glob:
         specifier: 11.0.0
         version: 11.0.0
@@ -567,6 +570,9 @@ packages:
   deepmerge@4.3.1:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
+
+  defu@6.1.4:
+    resolution: {integrity: sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==}
 
   del@5.1.0:
     resolution: {integrity: sha512-wH9xOVHnczo9jN2IW68BabcecVPxacIA3g/7z6vhSU/4stOKQzeCRK0yD0A24WiAAUJmmVpWqrERcTxnLo3AnA==}
@@ -1969,6 +1975,8 @@ snapshots:
       ms: 2.1.2
 
   deepmerge@4.3.1: {}
+
+  defu@6.1.4: {}
 
   del@5.1.0:
     dependencies:
