@@ -28,6 +28,7 @@
     "browserslist": "4.24.2",
     "commander": "12.1.0",
     "custom-element-vs-code-integration": "1.4.1",
+    "defu": "6.1.4",
     "glob": "11.0.0",
     "lightningcss": "1.28.1",
     "minify-html-literals": "1.3.5",
