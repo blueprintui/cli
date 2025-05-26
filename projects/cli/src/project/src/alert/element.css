@@ -1,0 +1,60 @@
+:host {
+  --background: #bed5f2;
+  --color: #2d2d2d;
+  --gap: 12px;
+  --padding: 12px;
+  font-family: inherit;
+  display: block;
+  width: 100%;
+}
+
+.private-host {
+  background: var(--background);
+  color: var(--color);
+  gap: var(--gap);
+  padding: var(--padding);
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+[part='icon'] {
+  --color: var(--icon-color);
+}
+
+[part='close'] {
+  --color: currentcolor;
+}
+
+:host([status='success']) {
+  --background: #b2e4ba;
+}
+
+:host([status='warning']) {
+  --background: #ededa4;
+}
+
+:host([status='danger']) {
+  --background: #f0baba;
+}
+
+button {
+  background: none;
+  border: 0;
+  position: absolute;
+  right: 12px;
+  font-size: 30px;
+  height: 32px;
+  width: 32px;
+  padding: 0;
+  cursor: pointer;
+  color: hsla(0, 0%, 0%, 0.4);
+}
+
+button:hover {
+  background: hsla(0, 0%, 0%, 0.05);
+}
+
+button:active {
+  background: hsla(0, 0%, 0%, 0.1);
+}
