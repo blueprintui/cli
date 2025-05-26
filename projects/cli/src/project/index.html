@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Basic HTML Page</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "lit": "./node_modules/lit/index.js",
+          "lit/": "./node_modules/lit/",
+          "@lit/reactive-element": "./node_modules/@lit/reactive-element/reactive-element.js",
+          "@lit/reactive-element/": "./node_modules/@lit/reactive-element/",
+          "lit-html": "./node_modules/lit-html/lit-html.js",
+          "lit-html/": "./node_modules/lit-html/",
+          "lit-element/": "./node_modules/lit-element/",
+          "tslib": "./node_modules/tslib/tslib.es6.js"
+        }
+      }
+    </script>
+    <style>
+      html { box-sizing: border-box; }
+      *, *:before, *:after { box-sizing: inherit; }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        font-family: Helvetica, Arial, "Lucida Grande", sans-serif;
+        margin: 0;
+        padding: 24px;
+        gap: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <ui-alert status="neutral" closable>neutral</ui-alert>
+
+    <ui-alert status="success" closable>success</ui-alert>
+
+    <ui-alert status="warning" closable>warning</ui-alert>
+
+    <ui-alert status="danger" closable>danger</ui-alert>
+
+    <script type="module">
+      import './dist/include/alert.js';
+    </script>
+  </body>
+</html>
