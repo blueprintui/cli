@@ -31,7 +31,7 @@ export default {
     tsExtension(),
     baseDir(),
     orderElements(),
-    metadata({ tags: ['docs', 'spec', 'status'] }),
+    metadata({ tags: ['docs', 'spec', 'status', 'since', 'example'] }),
     customElementVsCodePlugin({
       outdir: config.outDir,
       hideLogs: true
@@ -73,13 +73,15 @@ function metadata(config = { tags: [] }) {
     analyzePhase({ ts, node, moduleDoc }) {
       switch (node.kind) {
         case ts.SyntaxKind.ClassDeclaration:
-          node.jsDoc?.filter(i => i.tags).forEach(jsDoc => {
-            const declaration = moduleDoc.declarations.find(d => d.name === node.name?.getText());
-            jsDoc.tags
-              .filter(tag => config.tags.find(t => t === tag.tagName?.getText()))
-              .forEach(tag => {
-                  declaration.metadata = { ...declaration.metadata, [tag.tagName?.getText()]: tag.comment };
-              });
+          const classDeclaration = moduleDoc.declarations.find(d => d.name === node.name?.getText());
+
+          node.jsDoc?.forEach(jsDoc => {
+            jsDoc.tags?.forEach(tag => {
+              let tagName = tag.tagName?.getText();
+              if (config.tags.find(t => t === tagName)) {
+                classDeclaration.metadata = { ...classDeclaration.metadata, [tagName]: tag.comment };
+              }
+            });
           });
 
           break;
