@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.11.2
+- fix: missing metadata/jsdoc generation
+
 ## 0.11.0
 - feat: improved starter project generation
 - fix: bump dependencies
