@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.11.3
+- fix: bump dependencies
+
 ## 0.11.2
 - fix: missing metadata/jsdoc generation
 
