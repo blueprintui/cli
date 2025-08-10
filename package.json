@@ -1,5 +1,5 @@
 {
-  "name": "@blueprintui/monorepo",
+  "name": "blueprintui-cli-workspace",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -8,6 +8,7 @@
   },
   "packageManager": "pnpm@10.11.0",
   "scripts": {
+    "ci": "pnpm run build",
     "build": "pnpm -r build",
     "build:watch": "pnpm -r build:watch",
     "clean": "git clean -dfX",
