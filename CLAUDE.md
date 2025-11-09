@@ -97,7 +97,7 @@ The `blueprint.config.js` file supports:
 - **Build Output**: Preserves ES modules in `dist/lib/` for tree-shaking
 - **API Documentation**: Auto-generates `custom-elements.json` manifest
 - **TypeScript**: Targets ES2022 with ESNext modules
-- **Node Requirements**: Node 22.15.1, pnpm 10.11.0
+- **Node Requirements**: Node 24.11.0, pnpm 10.11.0
 - **Package Manager**: pnpm with workspace support
 
 ## Testing
