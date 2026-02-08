@@ -3,9 +3,8 @@
 import * as url from 'url';
 import { path, spinner } from 'zx';
 import { cwd } from 'process';
-import { rollup, watch } from 'rollup';
+import { rolldown, watch } from 'rolldown';
 import { program } from 'commander';
-import { loadConfigFile } from 'rollup/loadConfigFile';
 import { cp, lstat, readdir } from 'fs/promises';
 import { readFileSync, writeFileSync } from 'fs';
 import { join, resolve }  from 'path';
@@ -37,7 +36,7 @@ program
   .action(async (options, command) => {
     process.env.BLUEPRINTUI_BUILD = !options.watch ? 'production' : 'development';
     process.env.BLUEPRINTUI_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');
-    await buildRollup(options);
+    await buildRolldown(options);
   });
 
 program
@@ -86,78 +85,74 @@ program
 
 program.parse();
 
-function buildRollup(args) {
-  return loadConfigFile(path.resolve(__dirname, './rollup.config.mjs'), {}).then(
-    async ({ options, warnings }) => {
-      if (warnings.count) {
-        console.log(`${warnings.count} warnings`);
-      }
+async function buildRolldown(args) {
+  const configs = (await import(path.resolve(__dirname, './rolldown.config.mjs'))).default;
+  const config = configs[0];
+  const outputOptions = Array.isArray(config.output) ? config.output[0] : config.output;
 
-      warnings.flush();
+  if (!args.watch) {
+    const start = Date.now();
+    let bundle;
+    let buildFailed = false;
+    try {
+      bundle = await spinner('Building...', async () => await rolldown(config));
+      await bundle.write(outputOptions);
+    } catch (error) {
+      buildFailed = true;
+      console.error(status.error, error);
+    }
+    if (bundle) {
+      const end = Date.now();
+      await bundle.close();
 
-      if (!args.watch) {
-        const start = Date.now();
-        let bundle;
-        let buildFailed = false;
-        try {
-          bundle = await spinner('Building...', async () => await rollup(options[0]));
-          await bundle.write(options[0].output[0]);
-        } catch (error) {
-          buildFailed = true;
-          console.error(status.error, error);
+      const { messages } = await spinner('Verifying Package...', async () => await publint({
+        strict: true,
+        pkgDir: resolve(cwd())
+      }));
+
+      if (messages.length) {
+        const pkg = JSON.parse(readFileSync(resolve(cwd(),'./package.json'), 'utf8'));
+        for (const message of messages) {
+          console.log(formatMessage(message, pkg))
         }
-        if (bundle) {
-          const end = Date.now();
-          await bundle.close();
-
-          const { messages } = await spinner('Verifying Package...', async () => await publint({
-            strict: true,
-            pkgDir: resolve(cwd())
-          }));
-
-          if (messages.length) {
-            const pkg = JSON.parse(readFileSync(resolve(cwd(),'./package.json'), 'utf8'));
-            for (const message of messages) {
-              console.log(formatMessage(message, pkg))
-            }
-          } else {
-            console.log(status.success, `Success in ${(end - start) / 1000} seconds 🎉`);
-          }
-        }
-        process.exit(buildFailed ? 1 : 0);
-      }
-
-      if (args.watch) {
-        const watcher = watch(options[0]);
-
-        try {
-          watcher.on('event', (event) => {
-            switch (event.code) {
-              case 'START':
-                console.log(status.info, 'Building...');
-                break;
-              case 'ERROR':
-                console.error(status.error, event.error);
-                event.result.close();
-                break;
-              case 'WARN':
-                console.error(status.warn, event.error);
-                break;
-              case 'BUNDLE_END':
-                console.log(status.success, `Complete in ${event.duration / 1000} seconds`);
-                event.result.close();
-                break;
-            }
-          });
-        } catch (error) {
-          console.error(error);
-        }
-        watcher.on('event', ({ result }) => {
-          if (result) {
-            result.close();
-          }
-        });
+      } else {
+        console.log(status.success, `Success in ${(end - start) / 1000} seconds 🎉`);
       }
     }
-  );
+    process.exit(buildFailed ? 1 : 0);
+  }
+
+  if (args.watch) {
+    const watcher = watch(config);
+
+    try {
+      watcher.on('event', (event) => {
+        switch (event.code) {
+          case 'START':
+            console.log(status.info, 'Building...');
+            break;
+          case 'ERROR':
+            console.error(status.error, event.error);
+            if (event.result) {
+              event.result.close();
+            }
+            break;
+          case 'WARN':
+            console.error(status.warn, event.error);
+            break;
+          case 'BUNDLE_END':
+            console.log(status.success, `Complete in ${event.duration / 1000} seconds`);
+            event.result.close();
+            break;
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    watcher.on('event', ({ result }) => {
+      if (result) {
+        result.close();
+      }
+    });
+  }
 }

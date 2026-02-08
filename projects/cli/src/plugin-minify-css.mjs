@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs';
 import browserslist from 'browserslist';
 import { transform, browserslistToTargets } from 'lightningcss';
 
@@ -7,25 +8,27 @@ const targets = browserslistToTargets(browserslist('Chrome > 116'));
 export const css = (options = {}) => {
   return {
     name: 'css-modules',
-    transform(code, id) {
-      const isCssModule = this.getModuleInfo(id)?.attributes.type === 'css';
-      if (isCssModule) {
-        const output = options.minify
-          ? transform({
-              targets,
-              drafts: {
-                nesting: true,
-              },
-              analyzeDependencies: true,
-              code: Buffer.from(code),
-              minify: true,
-              sourceMap: false,
-            }).code.toString()
-          : code;
+    load(id) {
+      if (!id.endsWith('.css')) return null;
 
-        return `const stylesheet = new CSSStyleSheet();stylesheet.replaceSync(\`${output}\`);export default stylesheet;`;
-      }
-      return null;
+      const code = readFileSync(id, 'utf8');
+      const output = options.minify
+        ? transform({
+            targets,
+            drafts: {
+              nesting: true,
+            },
+            analyzeDependencies: true,
+            code: Buffer.from(code),
+            minify: true,
+            sourceMap: false,
+          }).code.toString()
+        : code;
+
+      return {
+        code: `const stylesheet = new CSSStyleSheet();stylesheet.replaceSync(\`${output}\`);export default stylesheet;`,
+        moduleType: 'js',
+      };
     },
   };
 };

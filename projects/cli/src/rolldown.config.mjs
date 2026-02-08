@@ -1,9 +1,4 @@
 import typescript from '@rollup/plugin-typescript';
-import nodeResolve from '@rollup/plugin-node-resolve';
-import replace from '@rollup/plugin-replace';
-import virtual from '@rollup/plugin-virtual';
-import copy from 'rollup-plugin-copy';
-import del from 'rollup-plugin-delete';
 import { fs, glob, path } from 'zx';
 import { idiomaticDecoratorsTransformer, constructorCleanupTransformer } from '@lit/ts-transformers';
 import { fileURLToPath } from 'url';
@@ -32,25 +27,35 @@ const project = {
   sourcemap: config.sourcemap
 };
 
+const entryFiles = [...project.entryPoints.flatMap(i => glob.globbySync(i))];
+const input = Object.fromEntries(
+  entryFiles.map(entry => {
+    const rel = path.relative(path.resolve(cwd, config.baseDir), entry);
+    const name = rel.replace(/\.ts$/, '');
+    return [name, entry];
+  })
+);
+
 export default [
   {
     external: project.externals,
-    input: 'library-entry-points',
+    input,
     treeshake: false,
     preserveEntrySignatures: 'strict',
+    resolve: {
+      conditionNames: ['import', 'module', project.prod ? 'production' : 'development', 'default'],
+    },
     output: {
       format: 'esm',
       dir: project.outDir,
       preserveModules: true,
-      sourcemap: project.sourcemap,
-      sourcemapExcludeSources: true
+      preserveModulesRoot: path.resolve(cwd, config.baseDir),
+      sourcemap: project.sourcemap
     },
     plugins: [
       project.prod ? cleanOutDir() : [],
       css({ minify: project.prod }),
       copyAssets(),
-      createEntrypoints(),
-      nodeResolve({ exportConditions: [project.prod ? 'production' : 'development'] }),
       compileTypescript(),
       project.prod ? [] : writeCache(project),
       project.prod ? minifyHTML() : [],
@@ -63,15 +68,24 @@ export default [
 ];
 
 function cleanOutDir() {
-  return del({ targets: [project.outDir], hook: 'buildStart', runOnce: true });
+  return {
+    name: 'clean-out-dir',
+    async buildStart() {
+      await fs.rm(project.outDir, { recursive: true, force: true });
+    }
+  };
 }
 
 function copyAssets() {
-  return copy({ copyOnce: true, targets: project.assets.map(src => ({ src, dest: config.outDir }))});
-}
-
-function createEntrypoints() {
-  return virtual({ 'library-entry-points': [...project.entryPoints.flatMap(i => glob.globbySync(i))].map(entry => `export * from '${entry}';`).join('\n') });
+  return {
+    name: 'copy-assets',
+    async buildStart() {
+      for (const src of project.assets) {
+        const dest = path.resolve(cwd, config.outDir, path.basename(src));
+        await fs.cp(src, dest, { recursive: true });
+      }
+    }
+  };
 }
 
 function compileTypescript() {
@@ -88,9 +102,24 @@ function compileTypescript() {
 }
 
 function inlinePackageVersion() {
-  return replace({ preventAssignment: false, values: { PACKAGE_VERSION: project.packageJSON.version } });
+  return {
+    name: 'inline-package-version',
+    transform(code) {
+      if (code.includes('PACKAGE_VERSION')) {
+        return { code: code.replaceAll('PACKAGE_VERSION', project.packageJSON.version), map: null };
+      }
+    }
+  };
 }
 
 function postClean() {
-  return del({ targets: [`${project.outDir}/**/.tsbuildinfo`, `${project.outDir}/**/_virtual`], hook: 'writeBundle' });
+  return {
+    name: 'post-clean',
+    async writeBundle() {
+      const tsbuildinfo = glob.globbySync(`${project.outDir}/**/.tsbuildinfo`);
+      for (const file of tsbuildinfo) {
+        await fs.rm(file, { recursive: true, force: true });
+      }
+    }
+  };
 }
