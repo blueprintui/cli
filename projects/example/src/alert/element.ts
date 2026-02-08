@@ -5,7 +5,8 @@ import styles from './element.css' with { type: 'css' };
 /**
  * @element ui-alert
  * @slot - alert content
- * @event - close
+ * @event close
+ * @command close - close the alert
  * @cssprop --color
  */
 export class Alert extends LitElement {
@@ -22,6 +23,14 @@ export class Alert extends LitElement {
         ${this.closable ? html`<button @click=${this.#close} part="close" aria-label="close">&times;</button>` : ''}
       </div>
     `;
+  }
+
+  constructor() {
+    super();
+    this.addEventListener('--close', event => {
+      console.log(event as CommandEvent);
+      this.#close();
+    });
   }
 
   #close() {

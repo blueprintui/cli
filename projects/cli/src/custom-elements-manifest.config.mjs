@@ -32,6 +32,7 @@ export default {
     baseDir(),
     orderElements(),
     metadata({ tags: ['docs', 'spec', 'status', 'since', 'example'] }),
+    commands(),
     customElementVsCodePlugin({
       outdir: config.outDir,
       hideLogs: true
@@ -66,6 +67,30 @@ function tsExtension() {
       customElementsManifest.modules = JSON.parse(JSON.stringify(customElementsManifest.modules).replace(/\.ts"/g, '.js"'));
     },
   };
+}
+
+function commands() {
+  return {
+    analyzePhase({ ts, node, moduleDoc }) {
+      switch (node.kind) {
+        case ts.SyntaxKind.ClassDeclaration:
+          const classDeclaration = moduleDoc.declarations.find(d => d.name === node.name?.getText());
+
+          node.jsDoc?.forEach(jsDoc => {
+            jsDoc.tags?.forEach(tag => {
+              if (tag.tagName?.getText() === 'command') {
+                const [name, ...rest] = tag.comment.split(' - ');
+                const description = rest.join(' - ').trim();
+                classDeclaration.commands = classDeclaration.commands ?? [];
+                classDeclaration.commands.push({ name: name.trim(), description });
+              }
+            });
+          });
+
+          break;
+      }
+    }
+  }
 }
 
 function metadata(config = { tags: [] }) {

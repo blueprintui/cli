@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.12.0
+- feat: add support for interest invoker commands
+
 ## 0.11.3
 - fix: bump dependencies
 

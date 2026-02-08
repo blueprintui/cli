@@ -2,9 +2,12 @@
   "name": "@blueprintui/example",
   "version": "0.0.0",
   "type": "module",
-  "customElements": "./custom-elements.json",
+  "customElements": "dist/custom-elements.json",
   "homepage": "https://cli.blueprintui.dev",
-  "keywords": ["web components", "blueprintui"],
+  "keywords": [
+    "web components",
+    "blueprintui"
+  ],
   "license": "MIT",
   "description": "test-project web component library",
   "scripts": {
@@ -45,12 +48,13 @@
     "url": "git+https://github.com/blueprintui/cli.git"
   },
   "dependencies": {
-    "lit": "^3.3.1"
+    "lit": "^3.3.2"
   },
   "devDependencies": {
     "@blueprintui/cli": "workspace:*",
-    "serve": "14.2.4",
+    "@typescript/lib-dom": "npm:@types/web@^0.0.328",
+    "serve": "14.2.5",
     "tslib": "2.8.1",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   }
 }
