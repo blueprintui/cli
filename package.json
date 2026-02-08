@@ -17,5 +17,10 @@
   },
   "devDependencies": {
     "lite-server": "2.6.1"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": ["rollup"]
+    }
   }
 }
