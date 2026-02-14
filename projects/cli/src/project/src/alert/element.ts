@@ -11,9 +11,9 @@ import styles from './element.css' with { type: 'css' };
 export class Alert extends LitElement {
   static styles = [styles];
 
-  @property({ type: String, reflect: true }) status: 'neutral' | 'success' | 'warning' | 'danger' = 'neutral';
+  @property({ type: String, reflect: true }) accessor status: 'neutral' | 'success' | 'warning' | 'danger' = 'neutral';
 
-  @property({ type: Boolean }) closable = false;
+  @property({ type: Boolean }) accessor closable = false;
 
   render() {
     return html`
