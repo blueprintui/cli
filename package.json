@@ -20,7 +20,12 @@
   },
   "pnpm": {
     "peerDependencyRules": {
-      "ignoreMissing": ["rollup"]
-    }
+      "ignoreMissing": [
+        "rollup"
+      ]
+    },
+    "onlyBuiltDependencies": [
+      "rs-module-lexer"
+    ]
   }
 }

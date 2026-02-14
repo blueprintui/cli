@@ -50,7 +50,13 @@ export default [
       dir: project.outDir,
       preserveModules: true,
       preserveModulesRoot: path.resolve(cwd, config.baseDir),
-      sourcemap: project.sourcemap
+      sourcemap: project.sourcemap,
+      entryFileNames: (chunkInfo) => {
+        if (chunkInfo.facadeModuleId?.endsWith('.css')) {
+          return '[name].css.js';
+        }
+        return '[name].js';
+      }
     },
     plugins: [
       project.prod ? cleanOutDir() : [],
