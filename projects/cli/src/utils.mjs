@@ -1,12 +1,14 @@
 import { cli } from '@custom-elements-manifest/analyzer/cli.js';
 
 export async function runCustomElementsAnalyzer(customElementsManifestConfig) {
-  // disable noisy log output from custom-elements-manifest
+  // disable noisy log output from custom-elements-manifest analyzer
   const log = console.log;
   console.log = () => {};
-  const result = await cli({ argv: ['analyze', '--quiet', '--config', customElementsManifestConfig] });
-  console.log = log;
-  return result;
+  try {
+    return await cli({ argv: ['analyze', '--quiet', '--config', customElementsManifestConfig] });
+  } finally {
+    console.log = log;
+  }
 }
 
 export async function getUserConfig() {

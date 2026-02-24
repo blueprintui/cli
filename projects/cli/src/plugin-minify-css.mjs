@@ -25,8 +25,9 @@ export const css = (options = {}) => {
           }).code.toString()
         : code;
 
+      const escaped = output.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
       return {
-        code: `const stylesheet = new CSSStyleSheet();stylesheet.replaceSync(\`${output}\`);export default stylesheet;`,
+        code: `const stylesheet = new CSSStyleSheet();stylesheet.replaceSync(\`${escaped}\`);export default stylesheet;`,
         moduleType: 'js',
       };
     },
