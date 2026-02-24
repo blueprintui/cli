@@ -5,19 +5,12 @@ import { path, spinner } from 'zx';
 import { cwd } from 'process';
 import { rolldown, watch } from 'rolldown';
 import { program } from 'commander';
-import { cp, lstat, readdir } from 'fs/promises';
+import { cp, readdir } from 'fs/promises';
 import { readFileSync, writeFileSync } from 'fs';
-import { join, resolve }  from 'path';
+import { resolve }  from 'path';
 import { getUserConfig } from './utils.mjs';
 import { publint } from 'publint';
 import { formatMessage } from 'publint/utils';
-
-const deepReadDir = async (dirPath) => await Promise.all(
-  (await readdir(dirPath)).map(async (entity) => {
-    const path = join(dirPath, entity)
-    return (await lstat(path)).isDirectory() ? await deepReadDir(path) : path
-  }),
-);
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -30,12 +23,12 @@ const status = {
 
 program
   .command('build')
-  .option('--config', 'path for custom config')
+  .option('--config <path>', 'path for custom config')
   .option('--watch')
   .description('build library')
   .action(async (options, command) => {
-    process.env.BLUEPRINTUI_BUILD = !options.watch ? 'production' : 'development';
-    process.env.BLUEPRINTUI_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');
+    process.env.BLUEPRINTUI_BUILD = options.watch ? 'development' : 'production';
+    process.env.BLUEPRINTUI_CONFIG = options.config ? path.resolve(options.config) : path.resolve('./blueprint.config.js');
     await buildRolldown(options);
   });
 
@@ -47,31 +40,34 @@ program
     const outPath = resolve(cwd(), `./${name}`);
     await cp(resolve(__dirname, './project'), outPath, { recursive: true });
 
-    const files = (await deepReadDir(outPath))?.flat(Number.POSITIVE_INFINITY);
-    files.forEach(file => {
-      const value = readFileSync(file, 'utf8').toString();
+    const entries = await readdir(outPath, { recursive: true, withFileTypes: true });
+    const files = entries.filter(e => e.isFile()).map(e => resolve(e.parentPath, e.name));
+    for (const file of files) {
+      const value = readFileSync(file, 'utf8');
       writeFileSync(file, value.replaceAll('{{LIBRARY}}', name));
-    });
+    }
   });
 
 program
   .command('api')
+  .option('--config <path>', 'path for custom config')
   .option('--update')
   .option('--test')
   .description('verify and update custom elements manifest API lockfile')
   .action(async (options, command) => {
-    process.env.BLUEPRINTUI_BUILD = !options.watch ? 'production' : 'development';
-    process.env.BLUEPRINTUI_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');
+    process.env.BLUEPRINTUI_BUILD = 'production';
+    process.env.BLUEPRINTUI_CONFIG = options.config ? path.resolve(options.config) : path.resolve('./blueprint.config.js');
 
     const config = await getUserConfig();
     const lockfilePath = config.customElementsManifestLockFile ? path.resolve(config.customElementsManifestLockFile) : path.resolve('./custom-elements.lock.json');
     const manifestPath = path.resolve(config.outDir, './custom-elements.json');
-    const lockfile = readFileSync(lockfilePath, 'utf8').toString();
-    const manifest = readFileSync(manifestPath, 'utf8').toString();
+    const lockfile = readFileSync(lockfilePath, 'utf8');
+    const manifest = readFileSync(manifestPath, 'utf8');
 
-    if (options.test) {      
+    if (options.test) {
       if (lockfile !== manifest) {
         console.error(status.error, '🚫 new custom element API changes detected, run "bp api --update" to update the custom-elements.lock.json');
+        process.exit(1);
       } else {
         console.log(status.success, `✅ No custom element API changes detected`);
       }
@@ -125,33 +121,24 @@ async function buildRolldown(args) {
   if (args.watch) {
     const watcher = watch(config);
 
-    try {
-      watcher.on('event', (event) => {
-        switch (event.code) {
-          case 'START':
-            console.log(status.info, 'Building...');
-            break;
-          case 'ERROR':
-            console.error(status.error, event.error);
-            if (event.result) {
-              event.result.close();
-            }
-            break;
-          case 'WARN':
-            console.error(status.warn, event.error);
-            break;
-          case 'BUNDLE_END':
-            console.log(status.success, `Complete in ${event.duration / 1000} seconds`);
+    watcher.on('event', (event) => {
+      switch (event.code) {
+        case 'START':
+          console.log(status.info, 'Building...');
+          break;
+        case 'ERROR':
+          console.error(status.error, event.error);
+          if (event.result) {
             event.result.close();
-            break;
-        }
-      });
-    } catch (error) {
-      console.error(error);
-    }
-    watcher.on('event', ({ result }) => {
-      if (result) {
-        result.close();
+          }
+          break;
+        case 'WARN':
+          console.error(status.warn, event.error);
+          break;
+        case 'BUNDLE_END':
+          console.log(status.success, `Complete in ${event.duration / 1000} seconds`);
+          event.result.close();
+          break;
       }
     });
   }

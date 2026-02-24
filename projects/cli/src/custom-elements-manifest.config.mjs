@@ -1,19 +1,10 @@
 import { resolve } from 'path';
 import { customElementVsCodePlugin } from 'custom-element-vs-code-integration';
+import { getUserConfig } from './utils.mjs';
 
 const cwd = process.cwd();
-const baseSrc = resolve(cwd, 'src');
-
-let userConfig = {};
-if (process.env.BLUEPRINTUI_CONFIG) {
-  userConfig = await import(process.env.BLUEPRINTUI_CONFIG);
-}
-
-const config = {
-  baseDir: './src',
-  outDir: './dist',
-  ...userConfig?.default?.library
-};
+const config = await getUserConfig();
+const baseSrc = resolve(cwd, config.baseDir);
 
 export default {
   globs: [resolve(cwd, config.baseDir)],
@@ -53,8 +44,9 @@ function baseDir() {
   return {
     name: 'base-dir',
     packageLinkPhase({ customElementsManifest }) {
+      const base = baseSrc.endsWith('/') ? baseSrc : `${baseSrc}/`;
       customElementsManifest.modules = JSON.parse(
-        JSON.stringify(customElementsManifest.modules).replaceAll(`"/${baseSrc}`, '"').replaceAll(`"${baseSrc}`, '"')
+        JSON.stringify(customElementsManifest.modules).replaceAll(base, '').replaceAll(base.slice(1), '')
       );
     },
   };
