@@ -13,7 +13,8 @@
   "scripts": {
     "start": "NODE_NO_WARNINGS=1 serve & npm run build:watch",
     "build": "bp build",
-    "build:watch": "bp build --watch"
+    "build:watch": "bp build --watch",
+    "typecheck": "tsgo --noEmit -p tsconfig.lib.json"
   },
   "files": [
     "package.json",
@@ -52,9 +53,10 @@
   },
   "devDependencies": {
     "@blueprintui/cli": "workspace:*",
-    "@typescript/lib-dom": "npm:@types/web@^0.0.339",
+    "@typescript/lib-dom": "npm:@types/web@^0.0.347",
+    "@typescript/native-preview": "7.0.0-dev.20260421.2",
     "serve": "14.2.6",
     "tslib": "2.8.1",
-    "typescript": "6.0.1-rc"
+    "typescript": "6.0.3"
   }
 }

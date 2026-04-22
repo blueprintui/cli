@@ -10,7 +10,8 @@
   "scripts": {
     "start": "NODE_NO_WARNINGS=1 serve & npm run build:watch",
     "build": "bp build",
-    "build:watch": "bp build --watch"
+    "build:watch": "bp build --watch",
+    "typecheck": "tsgo --noEmit -p tsconfig.lib.json"
   },
   "files": [
     "package.json",
@@ -45,12 +46,13 @@
     "url": "git+https://github.com/blueprintui/cli.git"
   },
   "dependencies": {
-    "lit": "^3.3.0"
+    "lit": "^3.3.2"
   },
   "devDependencies": {
-    "@blueprintui/cli": "^0.14.0",
+    "@blueprintui/cli": "^0.15.2",
+    "@typescript/native-preview": "7.0.0-dev.20260421.2",
     "serve": "14.2.6",
     "tslib": "~2.8.1",
-    "typescript": "6.0.1-rc"
+    "typescript": "6.0.3"
   }
 }
