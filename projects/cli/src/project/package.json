@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@blueprintui/cli": "^0.15.2",
-    "@typescript/native-preview": "7.0.0-dev.20260421.2",
+    "@typescript/native-preview": "7.0.0-dev.20260510.1",
     "serve": "14.2.6",
     "tslib": "~2.8.1",
     "typescript": "6.0.3"

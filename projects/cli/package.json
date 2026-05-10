@@ -39,6 +39,6 @@
     "zx": "8.8.5"
   },
   "devDependencies": {
-    "@typescript/native-preview": "7.0.0-dev.20260421.2"
+    "@typescript/native-preview": "7.0.0-dev.20260510.1"
   }
 }
